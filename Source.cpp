@@ -2,11 +2,13 @@
 #include <iostream>
 #include "BVH.h"
 
+//Просто парсер, который заполняет структуру, делал по документации вордовой
+
 void BuildTree(const char* file) {
     FILE* Dumbs = fopen(file, "rb");
     if (Dumbs == nullptr)
     {
-        fputs("Ошибка файла", stderr);
+        fputs("Error", stderr);
         exit(1);
     }
     uint32_t treesizeBytes;
@@ -34,16 +36,7 @@ void BuildTree(const char* file) {
     tree.drawTree(root);
 }
 int main() {
-	/*FILE* Dumbs = fopen("C:\\Users\\dimon\\Desktop\\task_description\\binary_dump\\cornell_box_bvh2.bin", "rb");
-    if (Dumbs == nullptr)
-    {
-        fputs("Ошибка файла", stderr);
-        exit(1);
-    }
-    unsigned char* buffer = (unsigned char*)malloc(sizeof(unsigned char) * 4);
-    uint32_t treesize;
-	fread(&treesize, sizeof(uint32_t), 1, Dumbs);
-    std::cout << treesize;*/
 
     BuildTree("C:\\Users\\dimon\\Desktop\\task_description\\binary_dump\\cornell_box_bvh2.bin");
+
 }

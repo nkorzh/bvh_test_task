@@ -1,0 +1,3 @@
+﻿  MAIN.CPP
+D:\DOC\OpenCL AMD course\test_project\BVH_task\BVH_task\src\MAIN.CPP(49,40): warning C4305: 'argument': truncation from 'double' to 'GLfloat'
+  BVH_task.vcxproj -> D:\DOC\OpenCL AMD course\test_project\BVH_task\Debug\BVH_task.exe

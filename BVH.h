@@ -2,6 +2,9 @@
 #include <cstdint>
 #include <iostream>
 #include <stack>
+#include <vector>
+
+using namespace std;
 
 struct float3
 {
@@ -43,6 +46,8 @@ struct BvhNode
 //Структура для хранения нодов в 
 struct BvhNodeTree
 {   
+    BvhNodeTree();
+
     BvhNodeTree(uint32_t update, float3 aabb0_min_or_v0, float3 aabb0_max_or_v1,
         float3 aabb1_min_or_v2, float3 aabb1_max_or_v3, BvhNodeTree* child0, BvhNodeTree*child1, BvhNodeTree* parent, uint32_t index) {
 
@@ -92,15 +97,22 @@ public:
     };
 
     //Рекурсивный алгоритм построения дерева из массива
-    BvhNodeTree* createTree(BvhNode item) {
+    BvhNodeTree* createTree(BvhNode item, BvhNodeTree* last, bool isLeft) {
         if (item.child0 == 4294967295) {
-            return new BvhNodeTree(item.update, item.aabb0_min_or_v0, item.aabb0_max_or_v1, item.aabb1_min_or_v2, item.aabb1_max_or_v3, 
-                nullptr, nullptr, getNodeByIndex(item.parent), BvhArray[item.child1].parent);
+            /*return new BvhNodeTree(item.update, item.aabb0_min_or_v0, item.aabb0_max_or_v1, item.aabb1_min_or_v2, item.aabb1_max_or_v3, 
+                nullptr, nullptr, getNodeByIndex(item.parent), BvhArray[item.child1].parent);*/
+            uint32_t ind = isLeft ? BvhArray[last->index].child0 : BvhArray[last->index].child1;
+            BvhNodeTree* buff = new BvhNodeTree(item.update, item.aabb0_min_or_v0, item.aabb0_max_or_v1, item.aabb1_min_or_v2, item.aabb1_max_or_v3,
+                nullptr, nullptr, last, ind);
+            leafArr.push_back(buff);
+            return buff;
         }
         BvhNode left = BvhArray[item.child0];
         BvhNode right = BvhArray[item.child1];
         BvhNodeTree* rootNode = new BvhNodeTree(item.update, item.aabb0_min_or_v0, item.aabb0_max_or_v1, item.aabb1_min_or_v2, item.aabb1_max_or_v3, 
-            createTree(left), createTree(right), getNodeByIndex(item.parent), BvhArray[item.child1].parent);
+            nullptr, nullptr, last, BvhArray[item.child1].parent);
+        rootNode->child0 = createTree(left, rootNode, true);
+        rootNode->child1 = createTree(right, rootNode, false);
         return rootNode;
     }
     //Отрисовка для отладки
@@ -109,6 +121,7 @@ public:
 
     //Поиск нода по индексу, нужен для поиска родителя и в целом может еще потом пригодиться 
     BvhNodeTree* getNodeByIndex(uint32_t item) {
+
 
         BvhNodeTree* node = root;
 
@@ -128,11 +141,16 @@ public:
             if (node->child1 != nullptr)
                 s.push(node->child1);
         }
+
+        
     }
+
+    std::vector<BvhNodeTree*> leafArr;
+
 private:
     BvhNodeTree* root = new BvhNodeTree(0u, float3(), float3(), float3(), float3(), nullptr, nullptr, nullptr, 0);
     void destroy_tree(BvhNodeTree* leaf);
     BvhNode* BvhArray;
-    const leadf
+    const long long leaf = 4294967295;
 };
 

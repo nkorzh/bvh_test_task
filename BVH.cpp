@@ -10,14 +10,14 @@ void Tree::drawTree(const BvhNodeTree* root)
     }
 }
 
-void Tree::destroy_tree()
+void Tree::Destroy_Tree()
 {
     destroy_tree(root);
 }
 
 void Tree::destroy_tree(BvhNodeTree* leaf)
 {
-    if (leaf != nullptr)				
+    if ((leaf != nullptr) && (leaf->child0 != nullptr))				
     {						
         destroy_tree(leaf->child0);	
         destroy_tree(leaf->child1);  	

@@ -21,6 +21,22 @@ struct float3
        out << point.vec[0] << ", " << point.vec[1] << ", " << point.vec[2] << ", ";
        return out;
     }
+
+    const float3 operator - (const float3& a) {
+        float3 ans;
+        ans.vec[0] = this->vec[0] - a.vec[0];
+        ans.vec[1] = this->vec[1] - a.vec[1];
+        ans.vec[2] = this->vec[2] - a.vec[2];
+        return ans;
+    }
+
+    const float3 operator + (const float3& a) {
+        float3 ans;
+        ans.vec[0] = this->vec[0] + a.vec[0];
+        ans.vec[1] = this->vec[1] + a.vec[1];
+        ans.vec[2] = this->vec[2] + a.vec[2];
+        return ans;
+    }
 };
 
 //—труктура дл€ хранени€ нодов в массиве
@@ -93,7 +109,7 @@ public:
     };
     ~Tree()
     {
-        destroy_tree();
+        Destroy_Tree();
     };
 
     //–екурсивный алгоритм построени€ дерева из массива
@@ -117,7 +133,7 @@ public:
     }
     //ќтрисовка дл€ отладки
     void drawTree(const BvhNodeTree* root);
-    void destroy_tree();
+    void Destroy_Tree();
 
     //ѕоиск нода по индексу, нужен дл€ поиска родител€ и в целом может еще потом пригодитьс€ 
     BvhNodeTree* getNodeByIndex(uint32_t item) {

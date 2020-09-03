@@ -9,6 +9,8 @@
 #define _y3_ coords->aabb1_min_or_v2.vec[1]
 #define _z3_ coords->aabb1_min_or_v2.vec[2]
 
+#define depth_to_draw 1
+
 
 #include <iostream>
 #include "BVH.h"
@@ -74,12 +76,49 @@ GLfloat* findNormal(BvhNodeTree* coords) {
     return normal;*/
 }
 
+void drawBoundingBox(BvhNodeTree* root, int cur_depth, int target_depth)
+{
+    if ((root != nullptr) && (!root->leafFlag) && cur_depth == target_depth) {
+        glBegin(GL_QUADS);
+
+        
+        glVertex3f(root->aabb0_min_or_v0.vec[0], root->aabb0_min_or_v0.vec[1], root->aabb0_min_or_v0.vec[2]);
+        glVertex3f(root->aabb0_max_or_v1.vec[0], root->aabb0_min_or_v0.vec[1], root->aabb0_min_or_v0.vec[2]);
+        glVertex3f(root->aabb0_max_or_v1.vec[0], root->aabb0_min_or_v0.vec[1], root->aabb0_max_or_v1.vec[2]);
+        glVertex3f(root->aabb0_min_or_v0.vec[0], root->aabb0_min_or_v0.vec[1], root->aabb0_max_or_v1.vec[2]);
+
+        glVertex3f(root->aabb0_max_or_v1.vec[0], root->aabb0_max_or_v1.vec[1], root->aabb0_max_or_v1.vec[2]);
+        glVertex3f(root->aabb0_max_or_v1.vec[0], root->aabb0_max_or_v1.vec[1], root->aabb0_min_or_v0.vec[2]);
+        glVertex3f(root->aabb0_min_or_v0.vec[0], root->aabb0_max_or_v1.vec[1], root->aabb0_min_or_v0.vec[2]);
+        glVertex3f(root->aabb0_min_or_v0.vec[0], root->aabb0_max_or_v1.vec[1], root->aabb0_max_or_v1.vec[2]);
+
+        glVertex3f(root->aabb0_max_or_v1.vec[0], root->aabb0_max_or_v1.vec[1], root->aabb0_max_or_v1.vec[2]);
+        glVertex3f(root->aabb0_max_or_v1.vec[0], root->aabb0_max_or_v1.vec[1], root->aabb0_min_or_v0.vec[2]);
+        glVertex3f(root->aabb0_max_or_v1.vec[0], root->aabb0_min_or_v0.vec[1], root->aabb0_min_or_v0.vec[2]);
+        glVertex3f(root->aabb0_max_or_v1.vec[0], root->aabb0_min_or_v0.vec[1], root->aabb0_max_or_v1.vec[2]);
+
+        glVertex3f(root->aabb0_max_or_v1.vec[0], root->aabb0_max_or_v1.vec[1], root->aabb0_max_or_v1.vec[2]);
+        glVertex3f(root->aabb0_min_or_v0.vec[0], root->aabb0_max_or_v1.vec[1], root->aabb0_max_or_v1.vec[2]);
+        glVertex3f(root->aabb0_min_or_v0.vec[0], root->aabb0_min_or_v0.vec[1], root->aabb0_max_or_v1.vec[2]);
+        glVertex3f(root->aabb0_max_or_v1.vec[0], root->aabb0_min_or_v0.vec[1], root->aabb0_max_or_v1.vec[2]);
+
+        glVertex3f(root->aabb0_min_or_v0.vec[0], root->aabb0_max_or_v1.vec[1], root->aabb0_max_or_v1.vec[2]);
+        glVertex3f(root->aabb0_min_or_v0.vec[0], root->aabb0_min_or_v0.vec[1], root->aabb0_max_or_v1.vec[2]);
+        glVertex3f(root->aabb0_min_or_v0.vec[0], root->aabb0_min_or_v0.vec[1], root->aabb0_min_or_v0.vec[2]);
+        glVertex3f(root->aabb0_min_or_v0.vec[0], root->aabb0_max_or_v1.vec[1], root->aabb0_min_or_v0.vec[2]);
+        glEnd();
+        return;
+    }
+    if (!root->leafFlag) {
+        drawBoundingBox(root->child0, cur_depth + 1, target_depth);
+        drawBoundingBox(root->child1, cur_depth + 1, target_depth);
+    }
+}
+
 void drawGeometry(Tree tree)
 {
-    glClearColor(0.7f, 1.0f, 0.7f, 0.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
 
-    for (size_t i = 0; i < tree.leafArr.size(); i++)
+   /* for (size_t i = 0; i < tree.leafArr.size(); i++)
     {
         glBegin(GL_TRIANGLES);
         glNormal3fv(&findNormal(tree.leafArr[i])[0]);
@@ -87,11 +126,19 @@ void drawGeometry(Tree tree)
         glVertex3f(tree.leafArr[i]->aabb0_max_or_v1.vec[0], tree.leafArr[i]->aabb0_max_or_v1.vec[1], tree.leafArr[i]->aabb0_max_or_v1.vec[2]);
         glVertex3f(tree.leafArr[i]->aabb1_min_or_v2.vec[0], tree.leafArr[i]->aabb1_min_or_v2.vec[1], tree.leafArr[i]->aabb1_min_or_v2.vec[2]);
         glEnd();
-    }
+    }*/
+
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    drawBoundingBox(tree.root, 0, depth_to_draw);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
+
 
 void display(void)
 {
+    glClearColor(0.7f, 1.0f, 0.7f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     drawGeometry(BuildTree("C:\\Users\\dimon\\Desktop\\task_description\\binary_dump\\cornell_box_bvh2.bin"));
     glutSwapBuffers();
@@ -100,16 +147,63 @@ void display(void)
 void init()
 {
 
-    GLfloat light_diffuse[] = { 1.0, 0.0, 0.0, 1.0 };  /* Red diffuse light. */
-    GLfloat light_position[] = { 1.0f, 1.0f, 1.0f, 0.0f };
+    float light_ambient[] = { 0.2,0.2,0.2,1.0 }; 
+    float light_diffuse[] = { 1.0,1.0,1.0,1.0 }; 
+    float light_specular[] = { 1.0,1.0,1.0,1.0 }; 
+    float light_position[] = { 1.0,1.0,1.0,1.0 }; 
 
-    glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
-    glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+    float light_ambient1[] = { 0.0,0.0,0.0,1.0 };
+    float light_diffuse1[] = { 0.0,1.0,1.0,1.0 };
+    float light_specular1[] = { 1.0,1.0,1.0,1.0 };
+    float light_position1[] = { 3.0,0.0,0.0,1.0 };
+
+    float light_ambient2[] = { 0.0,0.0,0.0,1.0 };
+    float light_diffuse2[] = { 1.0,0.0,1.0,1.0 };
+    float light_specular2[] = { 1.0,1.0,1.0,1.0 };
+    float light_position2[] = { 0.0,3.0,0.0,1.0 };
+
+    float light_ambient3[] = { 0.0,0.0,0.0,1.0 };
+    float light_diffuse3[] = { 1.0,1.0,1.0,0.0 };
+    float light_specular3[] = { 1.0,1.0,1.0,1.0 };
+    float light_position3[] = { 0.0,0.0,3.0,1.0 };
+
     glEnable(GL_LIGHT0);
+    glEnable(GL_LIGHT1);
+    glEnable(GL_LIGHT2);
+    glEnable(GL_LIGHT3);
+
     glEnable(GL_LIGHTING);
+
+
+    glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient); 
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse); 
+    //glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular); 
+    glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+
+    glLightfv(GL_LIGHT1, GL_AMBIENT, light_ambient1);
+    glLightfv(GL_LIGHT1, GL_DIFFUSE, light_diffuse1);
+    //glLightfv(GL_LIGHT1, GL_SPECULAR, light_specular1);
+    glLightfv(GL_LIGHT1, GL_POSITION, light_position1);
+
+    glLightfv(GL_LIGHT2, GL_AMBIENT, light_ambient2);
+    glLightfv(GL_LIGHT2, GL_DIFFUSE, light_diffuse2);
+    //glLightfv(GL_LIGHT2, GL_SPECULAR, light_specular2);
+    glLightfv(GL_LIGHT2, GL_POSITION, light_position2);
+
+    glLightfv(GL_LIGHT3, GL_AMBIENT, light_ambient3);
+    glLightfv(GL_LIGHT3, GL_DIFFUSE, light_diffuse3);
+    //glLightfv(GL_LIGHT3, GL_SPECULAR, light_specular3);
+    glLightfv(GL_LIGHT3, GL_POSITION, light_position3);
+    
+
+    //glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
+    //glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+
     glEnable(GL_NORMALIZE);
     glEnable(GL_DEPTH_TEST);
     glMatrixMode(GL_PROJECTION);
+    //glLightModelf(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
+
     gluPerspective( /* field of view in degree */ 40.0,
         /* aspect ratio */ 1.0,
         /* Z near */ 1.0, /* Z far */ 10.0);

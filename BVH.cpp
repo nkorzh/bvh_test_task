@@ -10,6 +10,7 @@ void Tree::drawTree(const BvhNodeTree* root)
     }
 }
 
+
 void Tree::Destroy_Tree()
 {
     destroy_tree(root);

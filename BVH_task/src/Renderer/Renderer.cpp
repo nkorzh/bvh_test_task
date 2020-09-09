@@ -2,10 +2,19 @@
  * Author : Kozhukharov Nikita
  */
 
-#include <..\glad\glad.h>
-#include <..\GLFW\glfw3.h>
+//#include <../glad/glad.h>
+//#include <../GLFW/glfw3.h>
 
-#include "Renderer/Renderer.h"
+#include "glad/glad.h"
+#include "GLFW/glfw3.h"
+#include <Renderer/Renderer.h>
+#include <Renderer/Shaders.h>
+
+// temporary
+#include <vector>
+#include <Renderer/Geometry/Mesh.h>
+
+static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
 /***
  * WindowHandler methods definition
@@ -14,11 +23,12 @@ void GLRenderer::WindowHandler::makeContextCurrent() {
     glfwMakeContextCurrent(window);
 }
 
-GLRenderer::WindowHandler::WindowHandler(int w, int h, const char* window_name, void(*callback)(GLFWwindow*, int, int)) : width(w), heigth(h) {
+GLRenderer::WindowHandler::WindowHandler(int w, int h, const char* window_name) 
+    : width(w), heigth(h) {
     window = glfwCreateWindow(w, h, window_name, NULL, NULL);
     if (windowReady()) {
         makeContextCurrent();
-        glfwSetFramebufferSizeCallback(window, callback);
+        glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     }
 }
 
@@ -43,7 +53,7 @@ bool GLRenderer::WindowHandler::windowReady() {
 /***
  * GLRenderer methods definition
  ***/
-bool GLRenderer::initGL(int w, int h, const char* window_name, void (*callback)(GLFWwindow*, int, int)) {
+bool GLRenderer::initGL(int w, int h, const char* window_name) {
     if (!glfwInit())
         return false;           
 
@@ -51,7 +61,7 @@ bool GLRenderer::initGL(int w, int h, const char* window_name, void (*callback)(
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    windowHandler = new WindowHandler(w, h, window_name, callback);
+    windowHandler = new WindowHandler(w, h, window_name);
     if (!windowHandler->windowReady()) {
         glfwTerminate();
         return false;
@@ -66,9 +76,26 @@ bool GLRenderer::initGLLoader() {
     return false;
 }
 
-GLRenderer::GLRenderer(int w, int h, void (*callback)(GLFWwindow*, int, int),
-    const char* window_name) {
-    renderReady = initGL(w, h, window_name, callback) && initGLLoader();
+int GLRenderer::addShaderProgram(const char* vertexShaderFile, const char* fragmentShaderFile) {
+    ShaderProgram * p = new ShaderProgram(vertexShaderFile, fragmentShaderFile);
+
+    if (!p->isValid()) {
+        delete p;
+        return -1;
+    }
+    shaderPrograms.emplace_back(p);
+    return shaderPrograms.size() - 1;
+}
+
+int GLRenderer::addMesh(Mesh * m) {
+    if (!m)
+        return -1;
+    meshPtrs.emplace_back(m);
+    return meshPtrs.size() - 1;
+}
+
+GLRenderer::GLRenderer(int w, int h, const char* window_name) {
+    renderReady = initGL(w, h, window_name) && initGLLoader();
 }
 
 void GLRenderer::startDrawLoop() {
@@ -77,13 +104,24 @@ void GLRenderer::startDrawLoop() {
         return;
     }
 
+    std::vector<Vertex> vertices = 
+        { Vertex(vec3(-0.5f, -0.5f, 0.0f), vec3(), vec2()),
+          Vertex(vec3(0.5f, -0.5f, 0.0f), vec3(), vec2()),
+          Vertex(vec3(0.0f,  0.5f, 0.0f), vec3(), vec2())
+        };
+    std::vector<unsigned int> ind = { 0, 1, 2 };
+    std::vector<Texture> tex = {};
+
+    Mesh mesh(vertices, ind, tex);
+
     while (!windowHandler->shouldClose()) {
         windowHandler->processInput();
         // clear window
         glClearColor(0.2f, 0.1f, 0.3f, 0.5f);   // setting the color, can be called once
         glClear(GL_COLOR_BUFFER_BIT);           // cleaning the color buffer, necessary to call every time
 
-        /// shader magic
+        ///we can 
+        mesh.draw(*shaderPrograms[0]);
 
         windowHandler->swapBuffers();
         glfwPollEvents(); // or WaitEvents
@@ -93,3 +131,13 @@ void GLRenderer::startDrawLoop() {
 GLRenderer::~GLRenderer() {
     glfwTerminate();
 }
+
+
+/***
+ * Window size change callback
+ ***/
+
+static void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
+    glViewport(0, 0, width, height);
+}
+

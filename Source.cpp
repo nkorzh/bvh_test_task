@@ -9,7 +9,7 @@
 #define _y3_ coords->aabb1_min_or_v2.vec[1]
 #define _z3_ coords->aabb1_min_or_v2.vec[2]
 
-#define depth_to_draw 1
+#define depth_to_draw 4
 
 
 #include <iostream>
@@ -118,7 +118,7 @@ void drawBoundingBox(BvhNodeTree* root, int cur_depth, int target_depth)
 void drawGeometry(Tree tree)
 {
 
-   /* for (size_t i = 0; i < tree.leafArr.size(); i++)
+    for (size_t i = 0; i < tree.leafArr.size(); i++)
     {
         glBegin(GL_TRIANGLES);
         glNormal3fv(&findNormal(tree.leafArr[i])[0]);
@@ -126,7 +126,7 @@ void drawGeometry(Tree tree)
         glVertex3f(tree.leafArr[i]->aabb0_max_or_v1.vec[0], tree.leafArr[i]->aabb0_max_or_v1.vec[1], tree.leafArr[i]->aabb0_max_or_v1.vec[2]);
         glVertex3f(tree.leafArr[i]->aabb1_min_or_v2.vec[0], tree.leafArr[i]->aabb1_min_or_v2.vec[1], tree.leafArr[i]->aabb1_min_or_v2.vec[2]);
         glEnd();
-    }*/
+    }
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -215,7 +215,7 @@ void init()
       /* Adjust cube position to be angle. */
     glTranslatef(0.0, -1.0, -1.0);
     glRotatef(0, 1.0, 0.0, 0.0);
-    glRotatef(20, 0.0, 1.0, 0.0);
+    glRotatef(0, 0.0, 1.0, 0.0);
 }
 
 int main(int argc, char** argv) {

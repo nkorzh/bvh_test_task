@@ -16,10 +16,10 @@ struct BvhNode
     uint32_t parent;
     uint32_t update;
 
-    float3 aabb0_min_or_v0;
-    float3 aabb0_max_or_v1;
-    float3 aabb1_min_or_v2;
-    float3 aabb1_max_or_v3;
+    vec3 aabb0_min_or_v0;
+    vec3 aabb0_max_or_v1;
+    vec3 aabb1_min_or_v2;
+    vec3 aabb1_max_or_v3;
     friend std::ostream& operator << (std::ostream& out, const BvhNode& node) {
         out << node.child0 << std::endl << node.child1 << std::endl << node.parent
             << std::endl << node.update << std::endl << node.aabb0_min_or_v0 << std::endl << node.aabb0_max_or_v1 << std::endl
@@ -33,8 +33,9 @@ struct BvhNodeTree
 {
     BvhNodeTree();
 
-    BvhNodeTree(uint32_t update, float3 aabb0_min_or_v0, float3 aabb0_max_or_v1,
-        float3 aabb1_min_or_v2, float3 aabb1_max_or_v3, BvhNodeTree* child0, BvhNodeTree* child1, BvhNodeTree* parent, uint32_t index, bool leaf) {
+    BvhNodeTree(uint32_t update, vec3 aabb0_min_or_v0, vec3 aabb0_max_or_v1,
+        vec3 aabb1_min_or_v2, vec3 aabb1_max_or_v3, BvhNodeTree* child0,
+        BvhNodeTree* child1, BvhNodeTree* parent, uint32_t index, bool leaf) {
 
         this->aabb0_min_or_v0 = aabb0_min_or_v0;
         this->aabb0_max_or_v1 = aabb0_max_or_v1;
@@ -55,10 +56,10 @@ struct BvhNodeTree
     uint32_t index;       //
 
 
-    float3 aabb0_min_or_v0;  //
-    float3 aabb0_max_or_v1;  //
-    float3 aabb1_min_or_v2;  //
-    float3 aabb1_max_or_v3;
+    vec3 aabb0_min_or_v0;  //
+    vec3 aabb0_max_or_v1;  //
+    vec3 aabb1_min_or_v2;  //
+    vec3 aabb1_max_or_v3;
 
     bool leafFlag;
 
@@ -98,46 +99,10 @@ public:
     BvhNodeTree* root = nullptr;
 
 private:
-    //BvhNodeTree* root = new BvhNodeTree(0u, float3(), float3(), float3(), float3(), nullptr, nullptr, nullptr, 0, false);
+    //BvhNodeTree* root = new BvhNodeTree(0u, vec3(), vec3(), vec3(), vec3(), nullptr, nullptr, nullptr, 0, false);
     void destroy_tree(BvhNodeTree* leaf);
     BvhNode* BvhArray;
     const long long leaf = 4294967295;
 };
 
-inline Tree BuildTree(const char* file) {
-    FILE* Dumbs = fopen(file, "rb");
-    if (Dumbs == nullptr)
-    {
-        fputs("Error", stderr);
-        exit(1);
-    }
-    uint32_t treesizeBytes;
-    fread(&treesizeBytes, sizeof(uint32_t), 1, Dumbs);
-
-    /*std::cout << "------" << treesizeBytes << "--------"<< std::endl;*/
-
-    size_t treesize = treesizeBytes / 64;
-
-    BvhNode* NodeArr = new BvhNode[treesize];
-    for (size_t i = 0; i < treesize; i++)
-    {
-        fread(&NodeArr[i], sizeof(BvhNode), treesize, Dumbs);
-    }
-
-    /*for (size_t i = 0; i < treesize; i++)
-    {
-        std::cout<< "-------" << i << "--------" << std::endl << NodeArr[i];
-    }*/
-    Tree tree = Tree(NodeArr);
-    BvhNodeTree* root = tree.createTree(NodeArr[0], nullptr, false);
-
-    //std::cout <<std::endl<< std::endl << *root.child0 << *root.child1 << *root.child0->child0;
-
-    //tree.drawTree(root);
-    /*std::cout << std::endl << std::endl << std::endl;
-    for (size_t i = 0; i < tree.leafArr.size(); i++)
-    {
-        std::cout << *tree.leafArr[i] << std::endl;
-    }*/
-    return tree;
-}
+Tree BuildTree(const char*);

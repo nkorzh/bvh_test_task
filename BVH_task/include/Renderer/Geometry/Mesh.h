@@ -5,9 +5,6 @@
 
 #pragma once
 
-//#include <../Renderer/Shaders.h>
-//#include <../Math/Vec.h>
-
 #include <Renderer/Shaders.h>
 #include <Math/Vec.h>
 #include <vector>
@@ -28,6 +25,7 @@ struct Texture {
 
 
 class Mesh {
+protected:
     unsigned int VAO, VBO, EBO;
     void setupMesh();
 
@@ -40,7 +38,18 @@ public:
     Mesh(std::vector<Vertex> & vertices, std::vector<unsigned int> & indices,
         std::vector<Texture> & textures);
     // shader is necessary to give him texture attributes
-    void draw(const ShaderProgram & shader);            
+    virtual void draw(const ShaderProgram & shader);            
 
     ~Mesh();
+};
+
+/* */
+class Box : public Mesh {
+    
+public:
+   Box(std::vector<Vertex>& vertices, 
+       std::vector<unsigned int>& indices);
+
+   void draw(const ShaderProgram&) override;
+
 };

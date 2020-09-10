@@ -4,47 +4,45 @@
 
 #define depth_to_draw 3 //
 
-#include <iostream>
 #include <GLFW/glfw3.h>
 #include <BVH/BVH.h>
-#include "Renderer/Renderer.h"
+#include <Renderer/Renderer.h>
 #include <Math/MathFunctions.h>
+#include <iostream>
 
 
 void drawBoundingBox(BvhNodeTree* root, int cur_depth, int target_depth)
 {
-    if ((root != nullptr) && (!root->leafFlag) && cur_depth == target_depth) {
+    if (!root && (!root->leafFlag) && cur_depth == target_depth) {
         glBegin(GL_QUADS);
 
-        
-        glVertex3f(root->aabb0_min_or_v0.vec[0], root->aabb0_min_or_v0.vec[1], root->aabb0_min_or_v0.vec[2]);
-        glVertex3f(root->aabb0_max_or_v1.vec[0], root->aabb0_min_or_v0.vec[1], root->aabb0_min_or_v0.vec[2]);
-        glVertex3f(root->aabb0_max_or_v1.vec[0], root->aabb0_min_or_v0.vec[1], root->aabb0_max_or_v1.vec[2]);
-        glVertex3f(root->aabb0_min_or_v0.vec[0], root->aabb0_min_or_v0.vec[1], root->aabb0_max_or_v1.vec[2]);
+        glVertex3f(root->aabb0_min_or_v0[0], root->aabb0_min_or_v0[1], root->aabb0_min_or_v0[2]);    // A
+        glVertex3f(root->aabb0_max_or_v1[0], root->aabb0_min_or_v0[1], root->aabb0_min_or_v0[2]);    // B
+        glVertex3f(root->aabb0_max_or_v1[0], root->aabb0_min_or_v0[1], root->aabb0_max_or_v1[2]);
+        glVertex3f(root->aabb0_min_or_v0[0], root->aabb0_min_or_v0[1], root->aabb0_max_or_v1[2]);
 
-        glVertex3f(root->aabb0_max_or_v1.vec[0], root->aabb0_max_or_v1.vec[1], root->aabb0_max_or_v1.vec[2]);
-        glVertex3f(root->aabb0_max_or_v1.vec[0], root->aabb0_max_or_v1.vec[1], root->aabb0_min_or_v0.vec[2]);
-        glVertex3f(root->aabb0_min_or_v0.vec[0], root->aabb0_max_or_v1.vec[1], root->aabb0_min_or_v0.vec[2]);
-        glVertex3f(root->aabb0_min_or_v0.vec[0], root->aabb0_max_or_v1.vec[1], root->aabb0_max_or_v1.vec[2]);
+        glVertex3f(root->aabb0_max_or_v1[0], root->aabb0_max_or_v1[1], root->aabb0_max_or_v1[2]);
+        glVertex3f(root->aabb0_max_or_v1[0], root->aabb0_max_or_v1[1], root->aabb0_min_or_v0[2]);
+        glVertex3f(root->aabb0_min_or_v0[0], root->aabb0_max_or_v1[1], root->aabb0_min_or_v0[2]);
+        glVertex3f(root->aabb0_min_or_v0[0], root->aabb0_max_or_v1[1], root->aabb0_max_or_v1[2]);
 
-        glVertex3f(root->aabb0_max_or_v1.vec[0], root->aabb0_max_or_v1.vec[1], root->aabb0_max_or_v1.vec[2]);
-        glVertex3f(root->aabb0_max_or_v1.vec[0], root->aabb0_max_or_v1.vec[1], root->aabb0_min_or_v0.vec[2]);
-        glVertex3f(root->aabb0_max_or_v1.vec[0], root->aabb0_min_or_v0.vec[1], root->aabb0_min_or_v0.vec[2]);
-        glVertex3f(root->aabb0_max_or_v1.vec[0], root->aabb0_min_or_v0.vec[1], root->aabb0_max_or_v1.vec[2]);
+        glVertex3f(root->aabb0_max_or_v1[0], root->aabb0_max_or_v1[1], root->aabb0_max_or_v1[2]);
+        glVertex3f(root->aabb0_max_or_v1[0], root->aabb0_max_or_v1[1], root->aabb0_min_or_v0[2]);
+        glVertex3f(root->aabb0_max_or_v1[0], root->aabb0_min_or_v0[1], root->aabb0_min_or_v0[2]);
+        glVertex3f(root->aabb0_max_or_v1[0], root->aabb0_min_or_v0[1], root->aabb0_max_or_v1[2]);
 
-        glVertex3f(root->aabb0_max_or_v1.vec[0], root->aabb0_max_or_v1.vec[1], root->aabb0_max_or_v1.vec[2]);
-        glVertex3f(root->aabb0_min_or_v0.vec[0], root->aabb0_max_or_v1.vec[1], root->aabb0_max_or_v1.vec[2]);
-        glVertex3f(root->aabb0_min_or_v0.vec[0], root->aabb0_min_or_v0.vec[1], root->aabb0_max_or_v1.vec[2]);
-        glVertex3f(root->aabb0_max_or_v1.vec[0], root->aabb0_min_or_v0.vec[1], root->aabb0_max_or_v1.vec[2]);
+        glVertex3f(root->aabb0_max_or_v1[0], root->aabb0_max_or_v1[1], root->aabb0_max_or_v1[2]);
+        glVertex3f(root->aabb0_min_or_v0[0], root->aabb0_max_or_v1[1], root->aabb0_max_or_v1[2]);
+        glVertex3f(root->aabb0_min_or_v0[0], root->aabb0_min_or_v0[1], root->aabb0_max_or_v1[2]);
+        glVertex3f(root->aabb0_max_or_v1[0], root->aabb0_min_or_v0[1], root->aabb0_max_or_v1[2]);
 
-        glVertex3f(root->aabb0_min_or_v0.vec[0], root->aabb0_max_or_v1.vec[1], root->aabb0_max_or_v1.vec[2]);
-        glVertex3f(root->aabb0_min_or_v0.vec[0], root->aabb0_min_or_v0.vec[1], root->aabb0_max_or_v1.vec[2]);
-        glVertex3f(root->aabb0_min_or_v0.vec[0], root->aabb0_min_or_v0.vec[1], root->aabb0_min_or_v0.vec[2]);
-        glVertex3f(root->aabb0_min_or_v0.vec[0], root->aabb0_max_or_v1.vec[1], root->aabb0_min_or_v0.vec[2]);
+        glVertex3f(root->aabb0_min_or_v0[0], root->aabb0_max_or_v1[1], root->aabb0_max_or_v1[2]);
+        glVertex3f(root->aabb0_min_or_v0[0], root->aabb0_min_or_v0[1], root->aabb0_max_or_v1[2]);
+        glVertex3f(root->aabb0_min_or_v0[0], root->aabb0_min_or_v0[1], root->aabb0_min_or_v0[2]);
+        glVertex3f(root->aabb0_min_or_v0[0], root->aabb0_max_or_v1[1], root->aabb0_min_or_v0[2]);
         glEnd();
-        return;
-    }
-    if (!root->leafFlag) {
+
+
         drawBoundingBox(root->child0, cur_depth + 1, target_depth);
         drawBoundingBox(root->child1, cur_depth + 1, target_depth);
     }
@@ -57,9 +55,9 @@ void drawGeometry(Tree tree)
     {
         glBegin(GL_TRIANGLES);
         glNormal3fv(&findNormal(tree.leafArr[i])[0]);
-        glVertex3f(tree.leafArr[i]->aabb0_min_or_v0.vec[0], tree.leafArr[i]->aabb0_min_or_v0.vec[1], tree.leafArr[i]->aabb0_min_or_v0.vec[2]);
-        glVertex3f(tree.leafArr[i]->aabb0_max_or_v1.vec[0], tree.leafArr[i]->aabb0_max_or_v1.vec[1], tree.leafArr[i]->aabb0_max_or_v1.vec[2]);
-        glVertex3f(tree.leafArr[i]->aabb1_min_or_v2.vec[0], tree.leafArr[i]->aabb1_min_or_v2.vec[1], tree.leafArr[i]->aabb1_min_or_v2.vec[2]);
+        glVertex3f(tree.leafArr[i]->aabb0_min_or_v0[0], tree.leafArr[i]->aabb0_min_or_v0[1], tree.leafArr[i]->aabb0_min_or_v0[2]);
+        glVertex3f(tree.leafArr[i]->aabb0_max_or_v1[0], tree.leafArr[i]->aabb0_max_or_v1[1], tree.leafArr[i]->aabb0_max_or_v1[2]);
+        glVertex3f(tree.leafArr[i]->aabb1_min_or_v2[0], tree.leafArr[i]->aabb1_min_or_v2[1], tree.leafArr[i]->aabb1_min_or_v2[2]);
         glEnd();
     }
 
@@ -72,12 +70,17 @@ void drawGeometry(Tree tree)
 
 int main(int argc, char ** argv) {
     
-
+    std::string solutionDir(argv[0]);
+    try {
+        solutionDir.resize(solutionDir.find("Debug"));
+    } catch (const std::bad_alloc&) {
+        std::cout << "1. bad alloc\n";
+    }
     // loader class 
     // cin filename
-    GLRenderer* renderer = new GLRenderer(640, 480);
+    GLRenderer renderer(640, 480);
 
-    Tree BVHTree = BuildTree("C:\\Users\\dimon\\Desktop\\task_description\\binary_dump\\cornell_box_bvh2.bin");
+    //Tree BVHTree = BuildTree("C:\\Users\\dimon\\Desktop\\task_description\\binary_dump\\cornell_box_bvh2.bin");
 
     //BVHTree.leafArr is array of leafs (triangles), I thought it would be 
     //convenient to have a separate array for geometry, each time it takes a very 
@@ -89,10 +92,27 @@ int main(int argc, char ** argv) {
     //BVHTree.root root node in the tree, from it we start recursive tree traversal to draw the BVH, 
     //the recursive function itself can be observed above (drawBoundingBox), of course, this part will 
     //need to be rewritten for your implementation
+    /// parser + model creation
+    std::string modelFolder(solutionDir + "BVH_task\\models\\cornell_box\\");
 
-    renderer->addShaderProgram(argv[1], argv[2]);
-    renderer->startDrawLoop();
+    /// renderer.addMesh(...);
+    std::string shaderFolder(solutionDir + "BVH_task\\src\\Renderer\\Shaders\\Default\\");
+    std::string vertName = shaderFolder + "vert.glsl";
+    std::string fragName = shaderFolder + "frag.glsl";
+    renderer.addShaderProgram(vertName.c_str(), fragName.c_str());
+
+    // add objects
+    std::vector<Vertex> box_v =
+    { Vertex(vec3(-0.5f, -0.5f, 0.4f), vec3(), vec2()),
+      Vertex(vec3(0.0f,  0.5f, 0.0f), vec3(), vec2()),
+      Vertex(vec3(0.5f, -0.5f, -0.2f), vec3(), vec2()),
+      Vertex(vec3(0.0f,  -0.9f, 0.3f), vec3(), vec2())
+    };
+    std::vector<unsigned int> ind_b = { 0, 3, 1, 2 };
+    Box* b = new Box(box_v, ind_b);
+    renderer.addMesh(b);
+
+    renderer.startDrawLoop();
  
-    delete renderer;
     return 0;
 }

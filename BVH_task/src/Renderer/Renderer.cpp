@@ -66,6 +66,7 @@ bool GLRenderer::initGL(int w, int h, const char* window_name) {
         glfwTerminate();
         return false;
     }
+    /// add  default shaders or exit
     return true;
 }
 
@@ -103,16 +104,24 @@ void GLRenderer::startDrawLoop() {
         //std::cerr << "not ready to render\n";
         return;
     }
+    //std::vector<Vertex> vertices = 
+    //    { Vertex(vec3(-0.5f, -0.5f, 0.0f), vec3(), vec2()),
+    //      Vertex(vec3(0.5f, -0.5f, 0.0f), vec3(), vec2()),
+    //      Vertex(vec3(0.0f,  0.5f, 0.0f), vec3(), vec2())
+    //    };
+    //std::vector<unsigned int> ind = { 0, 1, 2 };
+    //std::vector<Texture> tex = {};
 
-    std::vector<Vertex> vertices = 
-        { Vertex(vec3(-0.5f, -0.5f, 0.0f), vec3(), vec2()),
-          Vertex(vec3(0.5f, -0.5f, 0.0f), vec3(), vec2()),
-          Vertex(vec3(0.0f,  0.5f, 0.0f), vec3(), vec2())
-        };
-    std::vector<unsigned int> ind = { 0, 1, 2 };
-    std::vector<Texture> tex = {};
+    std::vector<Vertex> box_v =
+    { Vertex(vec3(-0.5f, -0.5f, 0.4f), vec3(), vec2()),
+      Vertex(vec3(0.0f,  0.5f, 0.0f), vec3(), vec2()),
+      Vertex(vec3(0.5f, -0.5f, -0.2f), vec3(), vec2()),
+      Vertex(vec3(0.0f,  -0.9f, 0.3f), vec3(), vec2())
+    };
+    std::vector<unsigned int> ind_b = { 0, 3, 1, 2 };
+    //Mesh mesh(vertices, ind, tex);
+    Box b(box_v, ind_b);
 
-    Mesh mesh(vertices, ind, tex);
 
     while (!windowHandler->shouldClose()) {
         windowHandler->processInput();
@@ -120,8 +129,10 @@ void GLRenderer::startDrawLoop() {
         glClearColor(0.2f, 0.1f, 0.3f, 0.5f);   // setting the color, can be called once
         glClear(GL_COLOR_BUFFER_BIT);           // cleaning the color buffer, necessary to call every time
 
-        ///we can 
-        mesh.draw(*shaderPrograms[0]);
+        for (const auto& m : meshPtrs) {
+            m->draw(*shaderPrograms[0]);
+        }
+        //b.draw(*shaderPrograms[0]);
 
         windowHandler->swapBuffers();
         glfwPollEvents(); // or WaitEvents

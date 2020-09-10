@@ -67,3 +67,14 @@ Mesh::~Mesh() {
 
 Vertex::Vertex(vec3 p, vec3 n, vec2 t) 
     : Position(p), Normal(n), TexCoords(t) {}
+
+Box::Box(std::vector<Vertex>& vertices, std::vector<unsigned int>& indices) 
+    : Mesh(vertices, indices, *(new std::vector<Texture>)) {
+}
+
+void Box::draw(const ShaderProgram& shader) {
+    shader.use();
+    glBindVertexArray(VAO);
+    glDrawElements(GL_LINE_LOOP, indices.size(), GL_UNSIGNED_INT, 0);
+    glBindVertexArray(0);
+}

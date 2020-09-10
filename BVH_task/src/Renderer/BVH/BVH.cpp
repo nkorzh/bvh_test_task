@@ -77,3 +77,4 @@ void Tree::destroy_tree(BvhNodeTree* leaf)
         delete leaf;
     }
 }
+

@@ -103,3 +103,41 @@ private:
     BvhNode* BvhArray;
     const long long leaf = 4294967295;
 };
+
+inline Tree BuildTree(const char* file) {
+    FILE* Dumbs = fopen(file, "rb");
+    if (Dumbs == nullptr)
+    {
+        fputs("Error", stderr);
+        exit(1);
+    }
+    uint32_t treesizeBytes;
+    fread(&treesizeBytes, sizeof(uint32_t), 1, Dumbs);
+
+    /*std::cout << "------" << treesizeBytes << "--------"<< std::endl;*/
+
+    size_t treesize = treesizeBytes / 64;
+
+    BvhNode* NodeArr = new BvhNode[treesize];
+    for (size_t i = 0; i < treesize; i++)
+    {
+        fread(&NodeArr[i], sizeof(BvhNode), treesize, Dumbs);
+    }
+
+    /*for (size_t i = 0; i < treesize; i++)
+    {
+        std::cout<< "-------" << i << "--------" << std::endl << NodeArr[i];
+    }*/
+    Tree tree = Tree(NodeArr);
+    BvhNodeTree* root = tree.createTree(NodeArr[0], nullptr, false);
+
+    //std::cout <<std::endl<< std::endl << *root.child0 << *root.child1 << *root.child0->child0;
+
+    //tree.drawTree(root);
+    /*std::cout << std::endl << std::endl << std::endl;
+    for (size_t i = 0; i < tree.leafArr.size(); i++)
+    {
+        std::cout << *tree.leafArr[i] << std::endl;
+    }*/
+    return tree;
+}

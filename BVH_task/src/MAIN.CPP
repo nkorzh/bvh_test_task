@@ -10,6 +10,7 @@
 #include "Renderer/Renderer.h"
 #include <Math/MathFunctions.h>
 
+
 void drawBoundingBox(BvhNodeTree* root, int cur_depth, int target_depth)
 {
     if ((root != nullptr) && (!root->leafFlag) && cur_depth == target_depth) {
@@ -75,6 +76,19 @@ int main(int argc, char ** argv) {
     // loader class 
     // cin filename
     GLRenderer* renderer = new GLRenderer(640, 480);
+
+    Tree BVHTree = BuildTree("C:\\Users\\dimon\\Desktop\\task_description\\binary_dump\\cornell_box_bvh2.bin");
+
+    //BVHTree.leafArr is array of leafs (triangles), I thought it would be 
+    //convenient to have a separate array for geometry, each time it takes a very 
+    //long time to traverse the tree in search of geometry
+
+    //BVHTree.leafArr[i] stores 4 points in itself, but the fourth point stores zeros and it does not participate 
+    //in drawing the triangle. An example of how to access the coordinates in the drawGeometry function in a loop
+    
+    //BVHTree.root root node in the tree, from it we start recursive tree traversal to draw the BVH, 
+    //the recursive function itself can be observed above (drawBoundingBox), of course, this part will 
+    //need to be rewritten for your implementation
 
     renderer->addShaderProgram(argv[1], argv[2]);
     renderer->startDrawLoop();

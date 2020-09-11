@@ -6,23 +6,32 @@
 //#include <../glad/glad.h>
 //#include <../GLFW/glfw3.h>
 
-#include "glad//glad.h"
-#include "GLFW/glfw3.h"
-#include "Renderer/Geometry/Mesh.h"
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+#include <Renderer/Geometry/Mesh.h>
 
-//#include <../Renderer/Geometry/Mesh.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 Mesh::Mesh(std::vector<Vertex>& vertices, std::vector<unsigned int>& indices, 
     std::vector<Texture>& textures) 
-    : vertices(std::move(vertices)), indices(std::move(indices)), textures(std::move(textures)) {
+    : vertices(std::move(vertices)), indices(std::move(indices)), textures(std::move(textures)), pos(0) {
     setupMesh();
 }
 
 void Mesh::draw(const ShaderProgram& shader) {
     /* manage textures */
     shader.use();
+    
+    float greenValue = (sin(glfwGetTime()) / 2.0f) + 0.5;
+    float blueValue = (sin(glfwGetTime() * 3) / 5.0f) + 0.6;
+
+    glm::mat4 transformation = glm::rotate(glm::mat4(1), (float)glfwGetTime(), glm::vec3(0, 1, 0));
+    shader.setVec4(glm::vec4(0.0f, greenValue, blueValue, 1.0f), std::string("vertexCol"));
+    shader.setMat4(transformation, std::string("transform"));
+
     glBindVertexArray(VAO);
-    glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_LINE_LOOP, indices.size(), GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
 }
 

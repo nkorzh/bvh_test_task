@@ -4,13 +4,14 @@
 
 //#include <..\glad\glad.h>
 //#include <..\GLFW\glfw3.h>
-#include "glad/glad.h"
-#include "GLFW/glfw3.h"
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
 #include <iostream>
 #include <fstream>
 #include <sstream>
 #include <Renderer/Shaders.h>
 
+#include <glm/gtc/type_ptr.hpp>
 
 /***
  * Shader subclass methods definitions
@@ -70,6 +71,10 @@ ShaderProgram::Shader::~Shader() {
  * Program methods definitions
  ***/
 
+int ShaderProgram::getUniformLocation(const std::string& varName) const {
+	return glGetUniformLocation(programId, varName.c_str());
+}
+
 ShaderProgram::ShaderProgram(const char* vertShaderFilename, const char* fragShaderFilename)
  : valid(false), programId(0) {
 	Shader vertShader(GL_VERTEX_SHADER, vertShaderFilename);
@@ -102,4 +107,29 @@ bool ShaderProgram::isValid() const {
 
 void ShaderProgram::use() const {
 	glUseProgram(programId);
+}
+
+unsigned int ShaderProgram::getProgramId() {
+	return programId;
+}
+
+void ShaderProgram::setVec3(const glm::vec3& v, const std::string& varName) const {
+	int location = getUniformLocation(varName);
+	if (location == -1)
+		return;
+	glUniform3f(location, v[0], v[1], v[2]);
+}
+
+void ShaderProgram::setVec4(const glm::vec4& v, const std::string& varName) const {
+	int location = getUniformLocation(varName);
+	if (location == -1)
+		return;
+	glUniform4f(location, v[0], v[1], v[2], v[3]);
+}
+
+void ShaderProgram::setMat4(const glm::mat4& m, const std::string& varName) const {
+	int location = getUniformLocation(varName);
+	if (location == -1)
+		return;
+	glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(m));
 }

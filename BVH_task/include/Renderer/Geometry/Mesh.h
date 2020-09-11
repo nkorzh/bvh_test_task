@@ -26,6 +26,7 @@ struct Texture {
 
 class Mesh {
 protected:
+    glm::vec3 pos;
     unsigned int VAO, VBO, EBO;
     void setupMesh();
 

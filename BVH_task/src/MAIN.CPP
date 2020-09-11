@@ -103,13 +103,13 @@ int main(int argc, char ** argv) {
 
     // add objects
     std::vector<Vertex> box_v =
-    { Vertex(vec3(-0.5f, -0.5f, 0.4f), vec3(), vec2()),
-      Vertex(vec3(0.0f,  0.5f, 0.0f), vec3(), vec2()),
-      Vertex(vec3(0.5f, -0.5f, -0.2f), vec3(), vec2()),
-      Vertex(vec3(0.0f,  -0.9f, 0.3f), vec3(), vec2())
+    { Vertex(vec3(-0.2f, -0.3f, 0.3f), vec3(), vec2()),
+      Vertex(vec3(0.3f,  -0.3f, 0.1f), vec3(), vec2()),
+      Vertex(vec3(0.0f, 0.6f, -0.05f), vec3(), vec2()),
+      Vertex(vec3(0.0f,  -0.45f, -0.5f), vec3(), vec2())
     };
-    std::vector<unsigned int> ind_b = { 0, 3, 1, 2 };
-    Box* b = new Box(box_v, ind_b);
+    std::vector<unsigned int> ind_b = { 0, 1, 2, 0, 3, 2, 1, 3 };
+    Mesh* b = new Mesh(box_v, ind_b, *(new std::vector<Texture>));
     renderer.addMesh(b);
 
     renderer.startDrawLoop();

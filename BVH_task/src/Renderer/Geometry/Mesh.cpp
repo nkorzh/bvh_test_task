@@ -66,6 +66,11 @@ void Mesh::setupMesh() {
 }
 
 
+void Mesh::setDrawMode(int mode)
+{
+    drawMode = mode;
+}
+
 Mesh::~Mesh() {
     // shouldn`t the order be reversed?
     glDeleteVertexArrays(1, &VAO);

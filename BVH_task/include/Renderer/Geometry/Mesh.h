@@ -42,6 +42,7 @@ public:
     // shader is necessary to give him texture attributes
     virtual void draw(const ShaderProgram & shader);            
 
+    void setDrawMode(int mode);
     ~Mesh();
 };
 

@@ -40,11 +40,12 @@ public:
 };
 
 class vec3 {
-	float v[3];
 	void setEqual(float a) {
 		v[0] = v[1] = v[2] = a;
 	}
 public:
+
+	float v[3];
 
 	vec3(float x, float y, float z) {
 		v[0] = x;

@@ -1,8 +1,7 @@
 /* Main.cpp
- * Author : Kozhukharov Nikita
+ * Author : Kozhukharov Nikita, Elagin Dmitrii
  */
 
-#define depth_to_draw 3 //
 
 #include <GLFW/glfw3.h>
 #include <BVH/BVH.h>
@@ -11,9 +10,9 @@
 #include <iostream>
 
 
-void addBoundingBoxes(BvhNodeTree* root, int cur_depth, int target_depth, GLRenderer& renderer, int shaderId)
+void addBoundingBoxes(BvhNodeTree* root, int cur_depth, int target_depth, GLRenderer& renderer, int shaderId, bool enableHierarchy = false)
 {
-    if (root && !(root->leafFlag)) {
+    if (root && !(root->leafFlag) && (cur_depth == target_depth || !enableHierarchy)) {
         std::vector<Vertex> box_i = {
             Vertex(vec3(root->aabb0_min_or_v0[0], root->aabb0_min_or_v0[1], root->aabb0_min_or_v0[2]), vec3(), vec2()),
             Vertex(vec3(root->aabb0_max_or_v1[0], root->aabb0_min_or_v0[1], root->aabb0_min_or_v0[2]), vec3(), vec2()),
@@ -31,8 +30,15 @@ void addBoundingBoxes(BvhNodeTree* root, int cur_depth, int target_depth, GLRend
         i->setShader(shaderId);
         renderer.addMesh(i);
 
-        addBoundingBoxes(root->child0, cur_depth + 1, target_depth, renderer, shaderId);
-        addBoundingBoxes(root->child1, cur_depth + 1, target_depth, renderer, shaderId);
+        if (enableHierarchy && (cur_depth == target_depth))
+        {
+            return;
+        }
+    }
+
+    if (root && !(root->leafFlag)) {
+        addBoundingBoxes(root->child0, cur_depth + 1, target_depth, renderer, shaderId, enableHierarchy);
+        addBoundingBoxes(root->child1, cur_depth + 1, target_depth, renderer, shaderId, enableHierarchy);
     }
 }
 
@@ -49,7 +55,6 @@ void addGeometry(Tree& BVHTree, GLRenderer& renderer, int shaderId) {
         triangle->setShader(shaderId);
         renderer.addMesh(triangle);
     }
-    //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
 int main(int argc, char** argv) {
@@ -90,22 +95,14 @@ int main(int argc, char** argv) {
     fragName = shaderFolder + "Lighted\\frag.glsl";
     int lightedShaderId = renderer.addShaderProgram(vertName.c_str(), fragName.c_str());
 
-    /**
-     * Adding models
-     */
-    std::vector<Vertex> box_v =
-    { Vertex(vec3(-0.2f, -0.3f, 0.3f), vec3(), vec2()),
-      Vertex(vec3(0.3f,  -0.3f, 0.1f), vec3(), vec2()),
-      Vertex(vec3(0.0f, 0.6f, -0.05f), vec3(), vec2()),
-      Vertex(vec3(0.0f,  -0.45f, -0.5f), vec3(), vec2())
-    };
-    std::vector<unsigned int> ind_b = { 0, 1, 2, 0, 3, 2, 1, 3 };
-    Mesh* b = new Mesh(box_v, ind_b, *(new std::vector<Texture>));
-    renderer.addMesh(b);
-
     Tree BVHTree = BuildTree(modelFolder.c_str());
+    
+    bool enableHierarchy = false; //turn on this flag if you need hierarchy bounding box output
+
+    int hierarchyLVL = 3;
+
     addGeometry(BVHTree, renderer, lightedShaderId);
-    addBoundingBoxes(BVHTree.root, 0, 3, renderer, defaultShaderId);
+    addBoundingBoxes(BVHTree.root, 0, hierarchyLVL, renderer, lightedShaderId, enableHierarchy);
 
     renderer.startDrawLoop();
 

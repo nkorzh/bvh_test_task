@@ -1,3 +1,5 @@
+//Author: Elagin Dmitrii
+
 #pragma once
 
 #include <iostream>

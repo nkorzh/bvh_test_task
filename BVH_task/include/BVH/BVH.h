@@ -1,3 +1,5 @@
+//Author: Elagin Dmitrii
+
 #pragma once
 #include <cstdint>
 #include <iostream>
@@ -99,7 +101,6 @@ public:
     BvhNodeTree* root = nullptr;
 
 private:
-    //BvhNodeTree* root = new BvhNodeTree(0u, vec3(), vec3(), vec3(), vec3(), nullptr, nullptr, nullptr, 0, false);
     void destroy_tree(BvhNodeTree* leaf);
     BvhNode* BvhArray;
     const long long leaf = 4294967295;

@@ -21,10 +21,16 @@ void Mesh::draw(const ShaderProgram& shader) {
     /* manage textures */
     shader.use();
     
+    
     shader.setVec4(glm::vec4(color, 1.0f), std::string("vertexCol"));
     shader.setMat4(glm::mat4(1.0), std::string("model"));
-
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    if (drawMode == GL_LINE_STRIP) {
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    }
+    else 
+    {
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    }
     glBindVertexArray(VAO);
     glDrawElements(drawMode, indices.size(), GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);

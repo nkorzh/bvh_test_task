@@ -52,7 +52,7 @@ void addGeometry(Tree& BVHTree, GLRenderer& renderer, int shaderId) {
         Mesh* triangle = new Mesh(triangle_i, ind_i, *(new std::vector<Texture>));
         triangle->setDrawMode(GL_TRIANGLES);
         triangle->setShader(shaderId);
-        triangle->setColor(glm::vec4(0.3, 0.6, 0.9, 1.0));
+        triangle->setColor(glm::vec4(0.9, 0.9, 0.9, 1.0));
         triangle->setShadeMode(true);
         renderer.addMesh(triangle);
     }

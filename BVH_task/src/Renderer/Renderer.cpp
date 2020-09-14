@@ -171,7 +171,7 @@ void GLRenderer::startDrawLoop() {
         windowHandler->updateFramebufferSize();
         windowHandler->processInput();
         // clear window
-        glClearColor(0.6f, 0.6f, 0.6f, 0.5f);               // setting the color, can be called once
+        glClearColor(0.25f, 0.25f, 0.25f, 0.5f);               // setting the color, can be called once
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // cleaning the color buffer, necessary to call every time
 
         // send data to shaders

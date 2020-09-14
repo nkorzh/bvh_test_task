@@ -12,6 +12,7 @@ class Camera {
 	glm::vec3 direction;
 	glm::vec3 right;
 	glm::mat4 viewMatrix;
+	glm::mat4 projMatrix;
 	
 	float yaw = -63.6f;
 	float pitch = -23.1f;
@@ -29,10 +30,13 @@ public:
 	};
 
 	Camera(glm::vec3 pos = glm::vec3(-2.0f, 2.7f, 4.0f));
+
 	glm::mat4 getViewMatrix();
-	glm::mat4 getProjMatrix(float projAngle, float width_height, float near, float far);
+	glm::mat4 getProjMatrix();
+	void recountProjMatrix(float projAngle, float width_height, float near, float far);
 	void moveByKeys(CameraDirection dir, float deltaTime);
 	void moveByMouse(float xoffset, float yoffset, bool constrainPitch = true);
+	// debug method, uses iostream
 	void printCameraSettings();
 private:
 	void updateViewMatrix();

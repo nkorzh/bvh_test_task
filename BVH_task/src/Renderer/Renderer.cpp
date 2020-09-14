@@ -11,7 +11,6 @@
 
 static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
-
 /***
  * WindowHandler methods definition
  ***/
@@ -30,6 +29,8 @@ GLRenderer::WindowHandler::WindowHandler(int w, int h, const char* window_name)
         lastY = (float)height / 2;
         glfwSetCursorPos(window, (double)width / 2, (double)height / 2);
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+        camera.recountProjMatrix(45.0, getWindowAspect(), 0.1, 100.0);
     }
 }
 
@@ -43,6 +44,17 @@ void GLRenderer::WindowHandler::updateTime() {
     prevGlobalTime = curTime;
 }
 
+void GLRenderer::WindowHandler::updateFramebufferSize() {
+    int newWidth, newHeight;
+    glfwGetWindowSize(window, &newWidth, &newHeight);
+
+    if (newWidth != width || newHeight != height) {
+        width = newWidth;
+        height = newHeight;
+        camera.recountProjMatrix(45.0, getWindowAspect(), 0.1, 100.0);
+    }
+}
+
 void GLRenderer::WindowHandler::swapBuffers() {
     glfwSwapBuffers(window);
 }
@@ -51,6 +63,7 @@ void GLRenderer::WindowHandler::swapBuffers() {
  * Keys processing function
  ***/
 void GLRenderer::WindowHandler::processInput() {
+    static bool ctrlPressed = false;
     bool mouseBLeftPressed = glfwGetKey(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
     bool mouseBRightPressed = glfwGetKey(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS;
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -65,13 +78,28 @@ void GLRenderer::WindowHandler::processInput() {
         camera.moveByKeys(Camera::CameraDirection::BACKWARD, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS)
         camera.printCameraSettings();
+    if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) {
+        ctrlPressed = true;
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    }
+    else {
+        if (ctrlPressed) {
+            lastX = (float)width / 2;
+            lastY = (float)height / 2;
+            glfwSetCursorPos(window, (double)width / 2, (double)height / 2);
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        }
+        ctrlPressed = false;
+    }
 
-    /// todo: enable or disable cursor by ctrl
+
     double cursorX, cursorY;
-    glfwGetCursorPos(window, &cursorX, &cursorY);
-    camera.moveByMouse((float)cursorX - lastX, (float)cursorY - lastY, mouseBLeftPressed);
-    lastX = (float)cursorX;
-    lastY = (float)cursorY;
+    if (!ctrlPressed) {
+        glfwGetCursorPos(window, &cursorX, &cursorY);
+        camera.moveByMouse((float)cursorX - lastX, (float)cursorY - lastY, mouseBLeftPressed);
+        lastX = (float)cursorX;
+        lastY = (float)cursorY;
+    }
 }
 
 bool GLRenderer::WindowHandler::shouldClose() {
@@ -99,7 +127,6 @@ bool GLRenderer::initGL(int w, int h, const char* window_name) {
         glfwTerminate();
         return false;
     }
-    /// add  default shaders or exit
     return true;
 }
 
@@ -141,28 +168,26 @@ void GLRenderer::startDrawLoop() {
 
     while (!windowHandler->shouldClose()) {
         windowHandler->updateTime();
+        windowHandler->updateFramebufferSize();
         windowHandler->processInput();
         // clear window
-        glClearColor(0.2f, 0.2f, 0.2f, 0.5f);               // setting the color, can be called once
+        glClearColor(0.6f, 0.6f, 0.6f, 0.5f);               // setting the color, can be called once
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // cleaning the color buffer, necessary to call every time
 
         // send data to shaders
-        float width_height = windowHandler->getWindowAspect();
         for (const auto& shader : shaderPrograms) {
-            shader->setMat4(windowHandler->camera.getProjMatrix(45.0f, width_height, 0.1f, 100.0f),
-                std::string("proj"));
+            shader->setMat4(windowHandler->camera.getProjMatrix(), std::string("proj"));
             shader->setMat4(windowHandler->camera.getViewMatrix(), std::string("view"));
             glm::vec3 defaultLight(-20.0, 27.0, 40.0);
             shader->setVec3(defaultLight, std::string("lightPos"));
         }
-
 
         for (const auto& m : meshPtrs) {
             m->draw(*shaderPrograms[m->getShaderId()]);
         }
 
         windowHandler->swapBuffers();
-        glfwPollEvents(); // or WaitEvents
+        glfwPollEvents();
     }
 }
 
@@ -178,5 +203,3 @@ GLRenderer::~GLRenderer() {
 static void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
 }
-
-

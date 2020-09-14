@@ -171,7 +171,6 @@
     <ClInclude Include="include\Math\MathFunctions.h" />
     <ClInclude Include="include\Math\Vec.h" />
     <ClInclude Include="include\Renderer\Camera.h" />
-    <ClInclude Include="include\Renderer\Geometry\Geometry.h" />
     <ClInclude Include="include\Renderer\Geometry\Mesh.h" />
     <ClInclude Include="include\Renderer\Renderer.h" />
     <ClInclude Include="include\Renderer\Shaders.h" />

@@ -28,8 +28,9 @@ class Mesh {
     int drawMode;
     int shaderId;
 protected:
+    bool countShades = false;
     glm::vec3 pos;
-    glm::vec3 color;
+    glm::vec4 color;
     unsigned int VAO, VBO, EBO;
     void setupMesh();
 
@@ -38,26 +39,14 @@ protected:
     std::vector<Texture>      textures;
 
 public:
-    // vectors will be moved to avoid copying
     Mesh(std::vector<Vertex> & vertices, std::vector<unsigned int> & indices,
-        std::vector<Texture> & textures, glm::vec3 color = glm::vec3(0.2, 0.4, 0.6));
-    // shader is necessary to give him texture attributes
+        std::vector<Texture> & textures, glm::vec4 color = glm::vec4(0.2, 0.4, 0.6, 1.0));
     virtual void draw(const ShaderProgram & shader);            
 
     void setDrawMode(int mode);
     void setShader(int shaderId);
     void setColor(glm::vec4 col);
+    void setShadeMode(bool countShades);
     int getShaderId();
     ~Mesh();
-};
-
-/* */
-class Box : public Mesh {
-    
-public:
-   Box(std::vector<Vertex>& vertices, 
-       std::vector<unsigned int>& indices);
-
-   void draw(const ShaderProgram&) override;
-
 };

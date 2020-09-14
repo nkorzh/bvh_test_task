@@ -56,9 +56,6 @@
     <ClInclude Include="include\Math\Vec.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\Renderer\Geometry\Geometry.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\Renderer\Geometry\Mesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>

@@ -10,9 +10,9 @@
 #include <vector>
 
 class GLRenderer {
-    /// add cursor release by ctrl
-    /// recount proj matrix only when window size changes
     class WindowHandler { // should be singletone
+        int lastWidth;
+        int lastHeight;
         int width;
         int height;
         GLFWwindow* window;
@@ -27,8 +27,9 @@ class GLRenderer {
         Camera camera;
         WindowHandler(int w, int h, const char* window_name);
 
-        float getWindowAspect();
         void updateTime();
+        void updateFramebufferSize();
+        float getWindowAspect();
         /* Buffers swapping function for smooth picture (double buffering tech) */
         void swapBuffers();
         /* Keyboard and mouse clicks processing function */

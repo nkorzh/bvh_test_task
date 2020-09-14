@@ -31,6 +31,7 @@ public:
 	void setVec3(const glm::vec3&, const std::string&) const;
 	void setVec4(const glm::vec4&, const std::string&) const;
 	void setMat4(const glm::mat4&, const std::string&) const;
+	void setBool(const bool&, const std::string&) const;
 	// reload if necessary
 };
 

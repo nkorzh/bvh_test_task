@@ -19,12 +19,15 @@ Camera::Camera(glm::vec3 pos) : position(std::move(pos)) {
 }
 
 glm::mat4 Camera::getViewMatrix() {
-	updateViewMatrix();
 	return viewMatrix;
 }
 
-glm::mat4 Camera::getProjMatrix(float projAngle, float width_height, float near, float far) {
-	return glm::perspective(glm::radians(projAngle), width_height, near, far);
+glm::mat4 Camera::getProjMatrix() {
+	return projMatrix;
+}
+
+void Camera::recountProjMatrix(float projAngle, float width_height, float near, float far) {
+	projMatrix = glm::perspective(glm::radians(projAngle), width_height, near, far);
 }
 
 void Camera::moveByKeys(CameraDirection dir, float deltaTime) {
@@ -43,6 +46,7 @@ void Camera::moveByKeys(CameraDirection dir, float deltaTime) {
 			position += right * shiftAmount;
 			break;
 	}
+	updateViewMatrix();
 }
 
 void Camera::moveByMouse(float xoffset, float yoffset, bool constrainPitch) {
@@ -65,5 +69,5 @@ void Camera::updateDirVector() {
 	direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
 	direction = std::move(glm::normalize(direction));
 	right = std::move(glm::normalize(glm::cross(direction, up)));
+	updateViewMatrix();
 }
-

@@ -2,13 +2,11 @@
  * Author : Kozhukharov Nikita, Elagin Dmitrii
  */
 
-
 #include <GLFW/glfw3.h>
 #include <BVH/BVH.h>
 #include <Renderer/Renderer.h>
 #include <Math/MathFunctions.h>
 #include <iostream>
-
 
 void addBoundingBoxes(BvhNodeTree* root, int cur_depth, int target_depth, GLRenderer& renderer, int shaderId, bool enableHierarchy = false)
 {
@@ -28,6 +26,7 @@ void addBoundingBoxes(BvhNodeTree* root, int cur_depth, int target_depth, GLRend
         Mesh* i = new Mesh(box_i, ind_i, *(new std::vector<Texture>));
         i->setDrawMode(GL_LINE_STRIP);
         i->setShader(shaderId);
+        i->setColor(glm::vec4(1.0, 0.8, 0.0, 1.0));
         renderer.addMesh(i);
 
         if (enableHierarchy && (cur_depth == target_depth))
@@ -53,6 +52,8 @@ void addGeometry(Tree& BVHTree, GLRenderer& renderer, int shaderId) {
         Mesh* triangle = new Mesh(triangle_i, ind_i, *(new std::vector<Texture>));
         triangle->setDrawMode(GL_TRIANGLES);
         triangle->setShader(shaderId);
+        triangle->setColor(glm::vec4(0.3, 0.6, 0.9, 1.0));
+        triangle->setShadeMode(true);
         renderer.addMesh(triangle);
     }
 }
@@ -79,12 +80,11 @@ int main(int argc, char** argv) {
     //BVHTree.root root node in the tree, from it we start recursive tree traversal to draw the BVH, 
     //the recursive function itself can be observed above (drawBoundingBox), of course, this part will 
     //need to be rewritten for your implementation
-    /// parser + model creation
 
     std::string modelFolder(solutionDir + "BVH_task\\models\\cornell_box\\cornell_box.bin");
 
     /**
-     * Addig shaders
+     * Adding shaders
      */
     std::string shaderFolder(solutionDir + "BVH_task\\src\\Renderer\\Shaders\\");
     std::string vertName = shaderFolder + "Default\\vert.glsl";

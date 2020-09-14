@@ -11,7 +11,7 @@ out vec4 FragColor;
 
 void main() 
 {
-    vec3 lightColor = vec3(0.9, 0.8, 1.0);
+    vec3 lightColor = vec3(1.0, 1.0, 1.0);
     vec3 diffuse = lightColor;
     if (countDiffuse) {
         vec3 normal = normalize(Normal);
@@ -20,7 +20,7 @@ void main()
         diffuse *= diff;
     }
           
-    float ambientStrength = 0.1;
+    float ambientStrength = 0.0;
     vec3 ambientLight = normalize(vec3(-5.6, -4.5, -1.8));
     vec3 ambient = ambientStrength * ambientLight;
   

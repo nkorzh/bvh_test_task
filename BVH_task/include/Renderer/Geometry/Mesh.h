@@ -26,8 +26,10 @@ struct Texture {
 
 class Mesh {
     int drawMode;
+    int shaderId;
 protected:
     glm::vec3 pos;
+    glm::vec3 color;
     unsigned int VAO, VBO, EBO;
     void setupMesh();
 
@@ -38,11 +40,14 @@ protected:
 public:
     // vectors will be moved to avoid copying
     Mesh(std::vector<Vertex> & vertices, std::vector<unsigned int> & indices,
-        std::vector<Texture> & textures);
+        std::vector<Texture> & textures, glm::vec3 color = glm::vec3(0.2, 0.4, 0.6));
     // shader is necessary to give him texture attributes
     virtual void draw(const ShaderProgram & shader);            
 
     void setDrawMode(int mode);
+    void setShader(int shaderId);
+    void setColor(glm::vec4 col);
+    int getShaderId();
     ~Mesh();
 };
 

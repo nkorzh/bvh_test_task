@@ -11,9 +11,9 @@
 #include <iostream>
 
 
-void addBoundingBoxes(BvhNodeTree* root, int cur_depth, int target_depth, GLRenderer& renderer)
+void addBoundingBoxes(BvhNodeTree* root, int cur_depth, int target_depth, GLRenderer& renderer, int shaderId)
 {
-    if ((root != nullptr) && (!root->leafFlag)) {
+    if (root && !(root->leafFlag)) {
         std::vector<Vertex> box_i = {
             Vertex(vec3(root->aabb0_min_or_v0[0], root->aabb0_min_or_v0[1], root->aabb0_min_or_v0[2]), vec3(), vec2()),
             Vertex(vec3(root->aabb0_max_or_v1[0], root->aabb0_min_or_v0[1], root->aabb0_min_or_v0[2]), vec3(), vec2()),
@@ -28,19 +28,16 @@ void addBoundingBoxes(BvhNodeTree* root, int cur_depth, int target_depth, GLRend
         std::vector<unsigned int> ind_i = { 6, 5, 1, 2, 4, 5, 6, 7, 4, 2, 3, 7, 6, 0, 3, 2, 1, 0 };
         Mesh* i = new Mesh(box_i, ind_i, *(new std::vector<Texture>));
         i->setDrawMode(GL_LINE_STRIP);
+        i->setShader(shaderId);
         renderer.addMesh(i);
-    }
-    if (!root->leafFlag) {
-        addBoundingBoxes(root->child0, cur_depth + 1, target_depth, renderer);
-        addBoundingBoxes(root->child1, cur_depth + 1, target_depth, renderer);
+
+        addBoundingBoxes(root->child0, cur_depth + 1, target_depth, renderer, shaderId);
+        addBoundingBoxes(root->child1, cur_depth + 1, target_depth, renderer, shaderId);
     }
 }
 
-void addGeometry(Tree& BVHTree, GLRenderer& renderer) {
-
-    for (size_t i = 0; i < BVHTree.leafArr.size(); i++)
-    {
-       
+void addGeometry(Tree& BVHTree, GLRenderer& renderer, int shaderId) {
+    for (size_t i = 0; i < BVHTree.leafArr.size(); i++) {
         std::vector<Vertex> triangle_i = {
         Vertex(vec3(BVHTree.leafArr[i]->aabb0_min_or_v0.x(), BVHTree.leafArr[i]->aabb0_min_or_v0.y(), BVHTree.leafArr[i]->aabb0_min_or_v0.z()), findNormal(BVHTree.leafArr[i]), vec2()),
         Vertex(vec3(BVHTree.leafArr[i]->aabb0_max_or_v1.x(), BVHTree.leafArr[i]->aabb0_max_or_v1.y(), BVHTree.leafArr[i]->aabb0_max_or_v1.z()), findNormal(BVHTree.leafArr[i]), vec2()),
@@ -48,7 +45,8 @@ void addGeometry(Tree& BVHTree, GLRenderer& renderer) {
         };
         std::vector<unsigned int> ind_i = {0, 1, 2, 0};
         Mesh* triangle = new Mesh(triangle_i, ind_i, *(new std::vector<Texture>));
-        triangle->setDrawMode(GL_LINE_STRIP);
+        triangle->setDrawMode(GL_TRIANGLES);
+        triangle->setShader(shaderId);
         renderer.addMesh(triangle);
     }
     //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -83,10 +81,14 @@ int main(int argc, char** argv) {
     /**
      * Addig shaders
      */
-    std::string shaderFolder(solutionDir + "BVH_task\\src\\Renderer\\Shaders\\Default\\");
-    std::string vertName = shaderFolder + "vert.glsl";
-    std::string fragName = shaderFolder + "frag.glsl";
-    renderer.addShaderProgram(vertName.c_str(), fragName.c_str());
+    std::string shaderFolder(solutionDir + "BVH_task\\src\\Renderer\\Shaders\\");
+    std::string vertName = shaderFolder + "Default\\vert.glsl";
+    std::string fragName = shaderFolder + "Default\\frag.glsl";
+    int defaultShaderId = renderer.addShaderProgram(vertName.c_str(), fragName.c_str());
+
+    vertName = shaderFolder + "Lighted\\vert.glsl";
+    fragName = shaderFolder + "Lighted\\frag.glsl";
+    int lightedShaderId = renderer.addShaderProgram(vertName.c_str(), fragName.c_str());
 
     /**
      * Adding models
@@ -99,11 +101,11 @@ int main(int argc, char** argv) {
     };
     std::vector<unsigned int> ind_b = { 0, 1, 2, 0, 3, 2, 1, 3 };
     Mesh* b = new Mesh(box_v, ind_b, *(new std::vector<Texture>));
-    //renderer.addMesh(b);
+    renderer.addMesh(b);
 
     Tree BVHTree = BuildTree(modelFolder.c_str());
-    //addBoundingBoxes(BVHTree.root, 0, 3, renderer);
-    addGeometry(BVHTree, renderer);
+    addGeometry(BVHTree, renderer, lightedShaderId);
+    addBoundingBoxes(BVHTree.root, 0, 3, renderer, defaultShaderId);
 
     renderer.startDrawLoop();
 

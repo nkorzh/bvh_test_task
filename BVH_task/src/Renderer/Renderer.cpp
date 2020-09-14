@@ -138,39 +138,27 @@ void GLRenderer::startDrawLoop() {
         //std::cerr << "not ready to render\n";
         return;
     }
-    //std::vector<Vertex> vertices = 
-    //    { Vertex(vec3(-0.5f, -0.5f, 0.0f), vec3(), vec2()),
-    //      Vertex(vec3(0.5f, -0.5f, 0.0f), vec3(), vec2()),
-    //      Vertex(vec3(0.0f,  0.5f, 0.0f), vec3(), vec2())
-    //    };
-    //std::vector<unsigned int> ind = { 0, 1, 2 };
-    //std::vector<Texture> tex = {};
-
-    //std::vector<Vertex> box_v =
-    //{ Vertex(vec3(-0.5f, -0.5f, 0.4f), vec3(), vec2()),
-    //  Vertex(vec3(0.0f,  0.5f, 0.0f), vec3(), vec2()),
-    //  Vertex(vec3(0.5f, -0.5f, -0.2f), vec3(), vec2()),
-    //  Vertex(vec3(0.0f,  -0.9f, 0.3f), vec3(), vec2())
-    //};
-    //std::vector<unsigned int> ind_b = { 0, 3, 1, 2 };
-    //Box b(box_v, ind_b);
-
 
     while (!windowHandler->shouldClose()) {
         windowHandler->updateTime();
         windowHandler->processInput();
         // clear window
-        glClearColor(0.2f, 0.1f, 0.3f, 0.5f);               // setting the color, can be called once
+        glClearColor(0.1f, 0.1f, 0.1f, 0.5f);               // setting the color, can be called once
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // cleaning the color buffer, necessary to call every time
 
         // send data to shaders
         float width_height = windowHandler->getWindowAspect();
-        shaderPrograms[0]->setMat4(windowHandler->camera.getProjMatrix(45.0f, width_height, 0.1f, 100.0f),
-            std::string("proj"));
-        shaderPrograms[0]->setMat4(windowHandler->camera.getViewMatrix(), std::string("view"));
+        for (const auto& shader : shaderPrograms) {
+            shader->setMat4(windowHandler->camera.getProjMatrix(45.0f, width_height, 0.1f, 100.0f),
+                std::string("proj"));
+            shader->setMat4(windowHandler->camera.getViewMatrix(), std::string("view"));
+            glm::vec3 defaultLight(-20.0, 27.0, 40.0);
+            shader->setVec3(defaultLight, std::string("lightPos"));
+        }
+
 
         for (const auto& m : meshPtrs) {
-            m->draw(*shaderPrograms[0]);
+            m->draw(*shaderPrograms[m->getShaderId()]);
         }
 
         windowHandler->swapBuffers();

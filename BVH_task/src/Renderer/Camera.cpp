@@ -7,13 +7,16 @@
 #include <algorithm>
 #include <cmath>
 
+/// debug
+#include <iostream>
 
 void Camera::updateViewMatrix() {
 	viewMatrix = std::move(glm::lookAt(position, position + direction, up));
 }
 
-Camera::Camera(glm::vec3 pos) 
-	: position(std::move(pos)) {}
+Camera::Camera(glm::vec3 pos) : position(std::move(pos)) {
+	updateDirVector();
+}
 
 glm::mat4 Camera::getViewMatrix() {
 	updateViewMatrix();
@@ -49,6 +52,11 @@ void Camera::moveByMouse(float xoffset, float yoffset, bool constrainPitch) {
 	pitch += -yoffset * mouseSensitivity;
 	pitch = std::clamp(pitch, -maxPitchAbs, maxPitchAbs);
 	updateDirVector();
+}
+
+void Camera::printCameraSettings() {
+	std::cout << "Position: " << position.x << " " << position.y <<
+		" " << position.z << "\nYaw: " << yaw << "\nPitch: " << pitch << "\n\n\n";
 }
 
 void Camera::updateDirVector() {

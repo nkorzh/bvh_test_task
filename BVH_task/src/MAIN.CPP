@@ -11,7 +11,7 @@
 #include <iostream>
 
 
-void drawBoundingBox(BvhNodeTree* root, int cur_depth, int target_depth, GLRenderer& renderer)
+void addBoundingBoxes(BvhNodeTree* root, int cur_depth, int target_depth, GLRenderer& renderer)
 {
     if ((root != nullptr) && (!root->leafFlag)) {
         std::vector<Vertex> box_i = {
@@ -31,12 +31,12 @@ void drawBoundingBox(BvhNodeTree* root, int cur_depth, int target_depth, GLRende
         renderer.addMesh(i);
     }
     if (!root->leafFlag) {
-        drawBoundingBox(root->child0, cur_depth + 1, target_depth, renderer);
-        drawBoundingBox(root->child1, cur_depth + 1, target_depth, renderer);
+        addBoundingBoxes(root->child0, cur_depth + 1, target_depth, renderer);
+        addBoundingBoxes(root->child1, cur_depth + 1, target_depth, renderer);
     }
 }
 
-void drawGeomtry(Tree& BVHTree, GLRenderer& renderer) {
+void addGeometry(Tree& BVHTree, GLRenderer& renderer) {
 
     for (size_t i = 0; i < BVHTree.leafArr.size(); i++)
     {
@@ -61,13 +61,10 @@ int main(int argc, char** argv) {
         solutionDir.resize(solutionDir.find("Debug"));
     }
     catch (const std::bad_alloc&) {
-        std::cout << "1. bad alloc\n";
+        std::cout << "Bad alloc\nCouldnt remember solution directory\n";
     }
-    // loader class 
-    // cin filename
-    GLRenderer renderer(800, 600);
 
-    //Tree BVHTree = BuildTree("C:\\Users\\dimon\\Desktop\\task_description\\binary_dump\\cornell_box_bvh2.bin");
+    GLRenderer renderer(800, 600);
 
     //BVHTree.leafArr is array of leafs (triangles), I thought it would be 
     //convenient to have a separate array for geometry, each time it takes a very 
@@ -83,14 +80,17 @@ int main(int argc, char** argv) {
 
     std::string modelFolder(solutionDir + "BVH_task\\models\\cornell_box\\cornell_box.bin");
 
-    /// renderer.addMesh(...);
-    Tree BVHTree = BuildTree(modelFolder.c_str());
+    /**
+     * Addig shaders
+     */
     std::string shaderFolder(solutionDir + "BVH_task\\src\\Renderer\\Shaders\\Default\\");
     std::string vertName = shaderFolder + "vert.glsl";
     std::string fragName = shaderFolder + "frag.glsl";
     renderer.addShaderProgram(vertName.c_str(), fragName.c_str());
 
-    // add objects3кр
+    /**
+     * Adding models
+     */
     std::vector<Vertex> box_v =
     { Vertex(vec3(-0.2f, -0.3f, 0.3f), vec3(), vec2()),
       Vertex(vec3(0.3f,  -0.3f, 0.1f), vec3(), vec2()),
@@ -100,8 +100,11 @@ int main(int argc, char** argv) {
     std::vector<unsigned int> ind_b = { 0, 1, 2, 0, 3, 2, 1, 3 };
     Mesh* b = new Mesh(box_v, ind_b, *(new std::vector<Texture>));
     //renderer.addMesh(b);
-    drawBoundingBox(BVHTree.root, 0, 3, renderer);
-    drawGeomtry(BVHTree, renderer);
+
+    Tree BVHTree = BuildTree(modelFolder.c_str());
+    //addBoundingBoxes(BVHTree.root, 0, 3, renderer);
+    addGeometry(BVHTree, renderer);
+
     renderer.startDrawLoop();
 
     return 0;

@@ -4,8 +4,6 @@
 
 #pragma once
 
-//#include <glad/glad.h>
-//#include <glfw/glfw3.h>
 #include <Renderer/Camera.h>
 #include <Renderer/Shaders.h>
 #include <Renderer/Geometry/Mesh.h>
@@ -13,6 +11,7 @@
 
 class GLRenderer {
     /// add cursor release by ctrl
+    /// recount proj matrix only when window size changes
     class WindowHandler { // should be singletone
         int width;
         int height;
@@ -22,7 +21,6 @@ class GLRenderer {
         float deltaTime;
         // mouse details
         float lastX = 0, lastY = 0;
-        float curX, curY;
 
         void makeContextCurrent();
     public:

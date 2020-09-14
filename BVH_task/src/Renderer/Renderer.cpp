@@ -25,6 +25,10 @@ GLRenderer::WindowHandler::WindowHandler(int w, int h, const char* window_name)
     if (windowReady()) {
         makeContextCurrent();
         glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+        // set cursor to the center of the screen
+        lastX = (float)width / 2;
+        lastY = (float)height / 2;
+        glfwSetCursorPos(window, (double)width / 2, (double)height / 2);
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     }
 }
@@ -47,6 +51,8 @@ void GLRenderer::WindowHandler::swapBuffers() {
  * Keys processing function
  ***/
 void GLRenderer::WindowHandler::processInput() {
+    bool mouseBLeftPressed = glfwGetKey(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
+    bool mouseBRightPressed = glfwGetKey(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS;
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
@@ -57,11 +63,13 @@ void GLRenderer::WindowHandler::processInput() {
         camera.moveByKeys(Camera::CameraDirection::RIGHT, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
         camera.moveByKeys(Camera::CameraDirection::BACKWARD, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS)
+        camera.printCameraSettings();
+
     /// todo: enable or disable cursor by ctrl
     double cursorX, cursorY;
-    int mouseButtonLeft = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
     glfwGetCursorPos(window, &cursorX, &cursorY);
-    camera.moveByMouse((float)cursorX - lastX, (float)cursorY - lastY, mouseButtonLeft == GLFW_PRESS);
+    camera.moveByMouse((float)cursorX - lastX, (float)cursorY - lastY, mouseBLeftPressed);
     lastX = (float)cursorX;
     lastY = (float)cursorY;
 }

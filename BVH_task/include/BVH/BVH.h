@@ -80,6 +80,7 @@ public:
     {
     };
 
+    Tree() = default;
     BvhNodeTree* createTree(BvhNode item, BvhNodeTree* last, bool isLeft);
     void drawTree(const BvhNodeTree* root);
 

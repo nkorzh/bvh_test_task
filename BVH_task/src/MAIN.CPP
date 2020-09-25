@@ -11,7 +11,7 @@
 
 void addBoundingBoxes(BvhNodeTree* root, int cur_depth, int target_depth, GLRenderer& renderer, int shaderId, bool enableHierarchy = false)
 {
-    if (cur_depth < 15) {
+    if (cur_depth < 10) {
         if (root && !(root->leafFlag) && (cur_depth == target_depth || !enableHierarchy)) {
             std::vector<Vertex> box_i = {
                 Vertex(vec3(root->aabb0_min_or_v0[0], root->aabb0_min_or_v0[1], root->aabb0_min_or_v0[2]), vec3(), vec2()),
@@ -92,7 +92,7 @@ int main(int argc, char** argv) {
     //the recursive function itself can be observed above (drawBoundingBox), of course, this part will 
     //need to be rewritten for your implementation
 
-    std::string modelFolder(solutionDir + "BVH_task\\models\\sponza\\sponza_bvh2.bin");
+    std::string modelFolder(solutionDir + "BVH_task\\models\\sponza_bvh2.bin");
 
     /**
      * Adding shaders
@@ -101,14 +101,15 @@ int main(int argc, char** argv) {
     std::string vertName = shaderFolder + "Default\\vert.glsl";
     std::string fragName = shaderFolder + "Default\\frag.glsl";
 
-    
+    std::string CMDFilePath(solutionDir + "BVH_task\\models\\" + argv[1] + ".bin");
+
     int defaultShaderId = renderer.addShaderProgram(vertName.c_str(), fragName.c_str());
 
     vertName = shaderFolder + "Lighted\\vert.glsl";
     fragName = shaderFolder + "Lighted\\frag.glsl";
     int lightedShaderId = renderer.addShaderProgram(vertName.c_str(), fragName.c_str());
 
-    Tree BVHTree = BuildTree(modelFolder.c_str());
+    Tree BVHTree = BuildTree(CMDFilePath.c_str());
     
     bool enableHierarchy = false; //turn on this flag if you need hierarchy bounding box output
 

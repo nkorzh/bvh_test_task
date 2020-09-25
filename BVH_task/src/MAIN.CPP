@@ -72,7 +72,11 @@ int main(int argc, char** argv) {
 
     std::string solutionDir(argv[0]);
     try {
-        solutionDir.resize(solutionDir.find("Release"));
+        std::string solConfig("Release");       
+        
+        solConfig = "Debug";
+
+        solutionDir.resize(solutionDir.find(solConfig));
     }
     catch (const std::bad_alloc&) {
         std::cout << "Bad alloc\nCouldnt remember solution directory\n";

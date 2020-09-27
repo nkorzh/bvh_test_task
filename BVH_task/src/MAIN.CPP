@@ -11,7 +11,7 @@
 
 void addBoundingBoxes(BvhNodeTree* root, int cur_depth, int target_depth, GLRenderer& renderer, int shaderId, bool enableHierarchy = false)
 {
-    if (cur_depth < 10) {
+    if (cur_depth < 15) {
         if (root && !(root->leafFlag) && (cur_depth == target_depth || !enableHierarchy)) {
             std::vector<Vertex> box_i = {
                 Vertex(vec3(root->aabb0_min_or_v0[0], root->aabb0_min_or_v0[1], root->aabb0_min_or_v0[2]), vec3(), vec2()),
@@ -63,6 +63,14 @@ void addGeometry(Tree& BVHTree, GLRenderer& renderer, int shaderId) {
         triangle->setShadeMode(true);
         renderer.addMesh(triangle);
     }
+}
+
+glm::vec3 getStartPosition(Tree& tree) {
+    glm::vec3 startPos;
+    startPos.x = (tree.root->aabb0_max_or_v1.x() + tree.root->aabb0_min_or_v0.x()) / 2;
+    startPos.y = (tree.root->aabb0_max_or_v1.y() + tree.root->aabb0_min_or_v0.y()) / 2;
+    startPos.z = (tree.root->aabb0_max_or_v1.z() + tree.root->aabb0_min_or_v0.z()) / 2;
+    return startPos;
 }
 
 int main(int argc, char** argv) {
@@ -121,6 +129,7 @@ int main(int argc, char** argv) {
 
     addGeometry(BVHTree, renderer, lightedShaderId);
     addBoundingBoxes(BVHTree.root, 0, hierarchyLVL, renderer, lightedShaderId, enableHierarchy);
+    renderer.setCameraPos(getStartPosition(BVHTree));
 
     renderer.startDrawLoop();
 

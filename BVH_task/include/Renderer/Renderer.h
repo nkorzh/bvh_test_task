@@ -51,10 +51,11 @@ class GLRenderer {
 
 public:
     GLRenderer(int w, int h, const char* window_name = "BVH_task");
-
     int addShaderProgram(const char*, const char*);
     // ref_ptr should be used
     int addMesh(Mesh*);
     void startDrawLoop();
+
+    void setCameraPos(glm::vec3 camPos);
     ~GLRenderer();
 };

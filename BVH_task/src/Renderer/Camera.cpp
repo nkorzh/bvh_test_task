@@ -79,3 +79,12 @@ void Camera::updateDirVector() {
 	right = std::move(glm::normalize(glm::cross(direction, up)));
 	updateViewMatrix();
 }
+
+void Camera::setStartPos(glm::vec3 startPosition) {
+	static bool called = false;
+	if (!called) {
+		position = std::move(startPosition);
+		updateViewMatrix();
+	}
+	called = true;
+}

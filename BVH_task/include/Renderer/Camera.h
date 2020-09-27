@@ -36,6 +36,7 @@ public:
 	void recountProjMatrix(float projAngle, float width_height, float near, float far);
 	void moveByKeys(CameraDirection dir, float deltaTime);
 	void moveByMouse(float xoffset, float yoffset, bool constrainPitch = true);
+	void setStartPos(glm::vec3 startPosition);
 	void changeStreifSpeed(int, float); // positive value to increse, neg to decrease
 	// debug method, uses iostream
 	void printCameraSettings();

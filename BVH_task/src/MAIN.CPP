@@ -81,9 +81,6 @@ int main(int argc, char** argv) {
     std::string solutionDir(argv[0]);
     try {
         std::string solConfig("Release");       
-        
-        solConfig = "Debug";
-
         solutionDir.resize(solutionDir.find(solConfig));
     }
     catch (const std::bad_alloc&) {

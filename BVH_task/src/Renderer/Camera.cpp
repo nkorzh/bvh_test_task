@@ -72,8 +72,11 @@ void Camera::updateDirVector() {
 	updateViewMatrix();
 }
 
-void Camera::setStartCameraPosition(glm::vec3 startPosition)
-{
-	position = std::move(startPosition);
-	updateDirVector();
+void Camera::setStartPos(glm::vec3 startPosition) {
+	static bool called = false;
+	if (!called) {
+		position = std::move(startPosition);
+		updateViewMatrix();
+	}
+	called = true;
 }

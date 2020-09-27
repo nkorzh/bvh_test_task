@@ -160,12 +160,6 @@ GLRenderer::GLRenderer(int w, int h, const char* window_name) {
     glEnable(GL_DEPTH_TEST);
 }
 
-GLRenderer::WindowHandler* GLRenderer::GetWindowHendler()
-{
-    return windowHandler;
-}
-
-
 
 void GLRenderer::startDrawLoop() {
     if (!renderReady) {
@@ -196,6 +190,10 @@ void GLRenderer::startDrawLoop() {
         windowHandler->swapBuffers();
         glfwPollEvents();
     }
+}
+
+void GLRenderer::setCameraPos(glm::vec3 camPos) {
+    windowHandler->camera.setStartPos(camPos);
 }
 
 GLRenderer::~GLRenderer() {

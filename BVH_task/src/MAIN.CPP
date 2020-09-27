@@ -65,7 +65,7 @@ void addGeometry(Tree& BVHTree, GLRenderer& renderer, int shaderId) {
     }
 }
 
-glm::vec3 GetStartPosition(Tree& tree) {
+glm::vec3 getStartPosition(Tree& tree) {
     glm::vec3 startPos;
     startPos.x = (tree.root->aabb0_max_or_v1.x() + tree.root->aabb0_min_or_v0.x()) / 2;
     startPos.y = (tree.root->aabb0_max_or_v1.y() + tree.root->aabb0_min_or_v0.y()) / 2;
@@ -125,8 +125,8 @@ int main(int argc, char** argv) {
 
     addGeometry(BVHTree, renderer, lightedShaderId);
     addBoundingBoxes(BVHTree.root, 0, hierarchyLVL, renderer, lightedShaderId, enableHierarchy);
-    glm::vec3 startPos = GetStartPosition(BVHTree);
-    renderer.GetWindowHendler()->camera.setStartCameraPosition(startPos);
+    renderer.setCameraPos(getStartPosition(BVHTree));
+
     renderer.startDrawLoop();
 
     return 0;

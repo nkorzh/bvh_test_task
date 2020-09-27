@@ -160,6 +160,13 @@ GLRenderer::GLRenderer(int w, int h, const char* window_name) {
     glEnable(GL_DEPTH_TEST);
 }
 
+GLRenderer::WindowHandler* GLRenderer::GetWindowHendler()
+{
+    return windowHandler;
+}
+
+
+
 void GLRenderer::startDrawLoop() {
     if (!renderReady) {
         //std::cerr << "not ready to render\n";

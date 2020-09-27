@@ -24,12 +24,6 @@ GLRenderer::WindowHandler::WindowHandler(int w, int h, const char* window_name)
     if (windowReady()) {
         makeContextCurrent();
         glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-        // set cursor to the center of the screen
-        lastX = (float)width / 2;
-        lastY = (float)height / 2;
-        glfwSetCursorPos(window, (double)width / 2, (double)height / 2);
-        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
         camera.recountProjMatrix(45.0, getWindowAspect(), 0.1, 100.0);
     }
 }
@@ -64,42 +58,45 @@ void GLRenderer::WindowHandler::swapBuffers() {
  ***/
 void GLRenderer::WindowHandler::processInput() {
     static bool ctrlPressed = false;
-    bool mouseBLeftPressed = glfwGetKey(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
-    bool mouseBRightPressed = glfwGetKey(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS;
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, true);
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        camera.moveByKeys(Camera::CameraDirection::FORWARD, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        camera.moveByKeys(Camera::CameraDirection::LEFT, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        camera.moveByKeys(Camera::CameraDirection::RIGHT, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        camera.moveByKeys(Camera::CameraDirection::BACKWARD, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS)
-        camera.printCameraSettings();
-    if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) {
-        ctrlPressed = true;
-        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-    }
-    else {
-        if (ctrlPressed) {
-            lastX = (float)width / 2;
-            lastY = (float)height / 2;
-            glfwSetCursorPos(window, (double)width / 2, (double)height / 2);
-            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-        }
-        ctrlPressed = false;
-    }
+    static bool mouseBLeftPressed = isButtonPressed(GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
+    // static bool mouseBRightPressed;// = glfwGetKey(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS;
 
+    if (isKeyPressed(GLFW_KEY_ESCAPE))
+        glfwSetWindowShouldClose(window, true);
+    if (isKeyPressed(GLFW_KEY_W))
+        camera.moveByKeys(Camera::CameraDirection::FORWARD, deltaTime);
+    if (isKeyPressed(GLFW_KEY_A))
+        camera.moveByKeys(Camera::CameraDirection::LEFT, deltaTime);
+    if (isKeyPressed(GLFW_KEY_D))
+        camera.moveByKeys(Camera::CameraDirection::RIGHT, deltaTime);
+    if (isKeyPressed(GLFW_KEY_S))
+        camera.moveByKeys(Camera::CameraDirection::BACKWARD, deltaTime);
+    if (isKeyPressed(GLFW_KEY_C)) /// if debug
+        camera.printCameraSettings();
+    if (isKeyPressed(GLFW_KEY_KP_ADD))
+        camera.changeStreifSpeed(1, deltaTime);
+    else if (isKeyPressed(GLFW_KEY_KP_SUBTRACT))
+        camera.changeStreifSpeed(-1, deltaTime);
+    
+    if (mouseBLeftPressed && !isButtonPressed(GLFW_MOUSE_BUTTON_LEFT)) { // LMB released
+        mouseBLeftPressed = false;
+        lastX = (float)width / 2;
+        lastY = (float)height / 2;
+        glfwSetCursorPos(window, (double)width / 2, (double)height / 2);
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    } else if (!mouseBLeftPressed && isButtonPressed(GLFW_MOUSE_BUTTON_LEFT)) { // LMB pressed
+        mouseBLeftPressed = true;
+        lastX = (float)width / 2;
+        lastY = (float)height / 2;
+        glfwSetCursorPos(window, (double)width / 2, (double)height / 2);
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    }
 
     double cursorX, cursorY;
-    if (!ctrlPressed) {
-        glfwGetCursorPos(window, &cursorX, &cursorY);
-        camera.moveByMouse((float)cursorX - lastX, (float)cursorY - lastY, mouseBLeftPressed);
-        lastX = (float)cursorX;
-        lastY = (float)cursorY;
-    }
+    glfwGetCursorPos(window, &cursorX, &cursorY);
+    camera.moveByMouse((float)cursorX - lastX, (float)cursorY - lastY, mouseBLeftPressed);
+    lastX = (float)cursorX;
+    lastY = (float)cursorY;
 }
 
 bool GLRenderer::WindowHandler::shouldClose() {
@@ -108,6 +105,14 @@ bool GLRenderer::WindowHandler::shouldClose() {
 
 bool GLRenderer::WindowHandler::windowReady() {
     return window != NULL;
+}
+
+bool GLRenderer::WindowHandler::isKeyPressed(int button) {
+    return glfwGetKey(window, button) == GLFW_PRESS;
+}
+
+bool GLRenderer::WindowHandler::isButtonPressed(int button) {
+    return glfwGetMouseButton(window, button);
 }
 
 

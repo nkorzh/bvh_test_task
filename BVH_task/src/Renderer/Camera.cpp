@@ -51,11 +51,19 @@ void Camera::moveByKeys(CameraDirection dir, float deltaTime) {
 
 void Camera::moveByMouse(float xoffset, float yoffset, bool constrainPitch) {
 	const float maxPitchAbs = 89.0;
+	if (!constrainPitch)
+		return;
 	/// todo: process pitch to move around target point
 	yaw += xoffset * mouseSensitivity;
 	pitch += -yoffset * mouseSensitivity;
 	pitch = std::clamp(pitch, -maxPitchAbs, maxPitchAbs);
 	updateDirVector();
+}
+
+void Camera::changeStreifSpeed(int val, float deltaTime) {
+	const float shift = 5.0;
+	val = std::clamp(val, -1, 1);
+	movementSpeed = std::clamp(movementSpeed + shift * val * deltaTime, 0.5f, 5.0f);
 }
 
 void Camera::printCameraSettings() {

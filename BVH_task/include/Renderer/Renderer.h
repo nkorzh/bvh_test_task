@@ -36,6 +36,9 @@ class GLRenderer {
         void processInput();
         bool shouldClose(); // returns shouldClose window flag
         bool windowReady(); // returns true if window has been created successfully
+    private:
+        bool isKeyPressed(int button);
+        bool isButtonPressed(int button);
     };
 
     WindowHandler* windowHandler;

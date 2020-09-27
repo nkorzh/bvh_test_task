@@ -18,7 +18,7 @@ class Camera {
 	float pitch = -23.1f;
 
 	float movementSpeed = 1.8f;
-	float mouseSensitivity = 0.1f;
+	float mouseSensitivity = 0.08f;
 	float zoom = 45.0f;
 
 public:
@@ -37,6 +37,7 @@ public:
 	void moveByKeys(CameraDirection dir, float deltaTime);
 	void moveByMouse(float xoffset, float yoffset, bool constrainPitch = true);
 	void setStartPos(glm::vec3 startPosition);
+	void changeStreifSpeed(int, float); // positive value to increse, neg to decrease
 	// debug method, uses iostream
 	void printCameraSettings();
 private:
